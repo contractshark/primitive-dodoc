@@ -12,6 +12,37 @@ Manages the bar
 
 ## Methods
 
+### constructor
+
+```solidity
+constructor(uint256 someNumber)
+```
+
+This is the notice of the constructor
+*This is a constructor*
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| someNumber | uint256 | The description of the parameter |
+
+### fallback
+
+```solidity
+fallback()
+```
+
+
+
+
+
+
+
+
 ### baap
 
 ```solidity
@@ -85,6 +116,19 @@ function set(IBar.T t) external nonpayable
 | Name | Type | Description |
 |---|---|---|
 | t | IBar.T | undefined |
+
+### receive
+
+```solidity
+receive()
+```
+
+
+
+
+
+
+
 
 
 

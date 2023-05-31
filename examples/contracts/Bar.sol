@@ -37,6 +37,26 @@ interface IBar {
 /// @dev     Blablou
 /// @custom:version v2.0.1
 contract Bar is IBar {
+    /// @dev This is a constructor
+    /// @notice This is the notice of the constructor
+    /// @custom:tip A custom blah tag
+    /// @param someNumber The description of the parameter
+    constructor(uint256 someNumber) {someNumber;}
+
+    /// @dev This is a `receive()` function
+    /// @notice This is the notice of the `receive()` function
+    /// @custom:info if sending native tokens with some graffiti, check the {`fallback()`} function documentation.
+    receive() external payable {
+        // ...
+    }
+
+    /// @dev This is a fallback
+    /// @notice This is the notice of the fallback
+    /// @custom:warning the fallback function can return some data via assembly, but it will not be abi-encoded
+    fallback() external payable {
+        // ...
+    }
+
     /// @inheritdoc IBar
     function set(T memory t) external { }
 
@@ -51,5 +71,10 @@ contract Bar is IBar {
     /// @notice Baaps the yaps
     /// @param bar Number of bar
     /// @param aar Address of aar
-    function baap(uint256 bar, address aar) external { }
+    function baap(uint256 bar, address aar) external { _baap(bar, aar); }
+
+    /// @notice Baaps the yaps internally
+    /// @param bar Number of bar
+    /// @param aar Address of aar
+    function _baap(uint256 bar, address aar) internal {}
 }

@@ -1,5 +1,25 @@
 {
     "methods": {
+        "constructor": {
+            "stateMutability": "nonpayable",
+            "code": "constructor(uint256 someNumber)",
+            "inputs": {
+                "someNumber": {
+                    "type": "uint256",
+                    "description": "The description of the parameter"
+                }
+            },
+            "outputs": {},
+            "notice": "This is the notice of the constructor",
+            "details": "This is a constructor",
+            "custom:tip": "A custom blah tag"
+        },
+        "fallback()": {
+            "stateMutability": "payable",
+            "code": "fallback()",
+            "inputs": {},
+            "outputs": {}
+        },
         "baap(uint256,address)": {
             "stateMutability": "nonpayable",
             "code": "function baap(uint256 bar, address aar) external nonpayable",
@@ -50,6 +70,12 @@
                     "type": "IBar.T"
                 }
             },
+            "outputs": {}
+        },
+        "receive()": {
+            "stateMutability": "payable",
+            "code": "receive()",
+            "inputs": {},
             "outputs": {}
         }
     },

@@ -127,11 +127,12 @@ async function generateDocumentation(
       }
     }
 
+    // TODO: fetch manually Natspec tags from `receive()` and `fallback()` functions
+
     for (const methodSig in info.devdoc?.methods) {
-      const [methodName] = methodSig.split('(');
       const method = info.devdoc?.methods[methodSig];
 
-      if (doc.methods[methodSig] !== undefined && methodName !== 'constructor') {
+      if (doc.methods[methodSig] !== undefined) {
         doc.methods[methodSig].details = method?.details;
 
         for (const param in method?.params) {

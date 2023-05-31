@@ -7,6 +7,8 @@ export function getCodeFromAbi(element: AbiElement): string {
 
   if (element.type === 'constructor') {
     code = 'constructor(';
+  } else if (element.type === 'receive' || element.type === 'fallback') {
+    code = `${element.type}(`;
   } else {
     code = `${element.type} ${element.name}(`;
   }
@@ -66,7 +68,15 @@ export function decodeAbi(abi: AbiElement[]): Doc {
   for (let i = 0; i < abi.length; i += 1) {
     const el = abi[i];
 
-    /*
+    if (['fallback', 'receive'].includes(el.type)) {
+      doc.methods[`${el.type}()`] = {
+        stateMutability: el.stateMutability,
+        code: getCodeFromAbi(el),
+        inputs: {},
+        outputs: {},
+      };
+    }
+
     if (el.type === 'constructor') {
       const func: Method = {
         stateMutability: el.stateMutability,
@@ -83,9 +93,9 @@ export function decodeAbi(abi: AbiElement[]): Doc {
         };
       });
 
+      /* eslint-disable */
       doc.methods['constructor'] = func;
     }
-    */
 
     if (el.type === 'function') {
       const func: Method = {
