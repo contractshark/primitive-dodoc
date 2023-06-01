@@ -25,6 +25,7 @@ extendConfig((config: HardhatConfig, userConfig: Readonly<HardhatUserConfig>) =>
     templatePath: userConfig.dodoc?.templatePath || path.join(__dirname, './template.sqrl'),
     keepFileStructure: userConfig.dodoc?.keepFileStructure ?? true,
     freshOutput: userConfig.dodoc?.freshOutput ?? true,
+    helpers: userConfig.dodoc?.helpers || [],
   };
 });
 
@@ -173,6 +174,9 @@ async function generateDocumentation(
   });
 
   for (let i = 0; i < docs.length; i += 1) {
+    config.helpers?.forEach((elem) => {
+      Sqrl.helpers.define(elem.helperName, elem.helperFunc);
+    });
     const result = Sqrl.render(template, docs[i]);
     let docfileName = `${docs[i].name}.md`;
     let testFileName = `${docs[i].name}.json`;
