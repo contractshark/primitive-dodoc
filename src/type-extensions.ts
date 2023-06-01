@@ -1,4 +1,5 @@
 import 'hardhat/types/config';
+import { HelperFunction } from 'squirrelly/dist/types/containers';
 
 declare module 'hardhat/types/config' {
   export interface HardhatUserConfig {
@@ -11,6 +12,7 @@ declare module 'hardhat/types/config' {
       outputDir?: string;
       keepFileStructure?: boolean;
       freshOutput?: boolean;
+      helpers: { helperName: string; helperFunc: HelperFunction }[]
     }
   }
 
@@ -24,6 +26,7 @@ declare module 'hardhat/types/config' {
       outputDir: string;
       keepFileStructure: boolean;
       freshOutput: boolean;
+      helpers: { helperName: string; helperFunc: HelperFunction }[]
     }
   }
 }
