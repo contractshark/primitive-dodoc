@@ -12,7 +12,7 @@ declare module 'hardhat/types/config' {
       outputDir?: string;
       keepFileStructure?: boolean;
       freshOutput?: boolean;
-      helpers: { helperName: string; helperFunc: HelperFunction }[]
+      helpers?: { helperName: string; helperFunc: HelperFunction }[]
     }
   }
 
