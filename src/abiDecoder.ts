@@ -1,12 +1,12 @@
-import {
-  AbiElement, Doc, Method, Error, Event,
-} from './dodocTypes';
+import { AbiElement, Doc, Method, Error, Event } from './dodocTypes';
 
 export function getCodeFromAbi(element: AbiElement): string {
   let code;
 
   if (element.type === 'constructor') {
     code = 'constructor(';
+  } else if (element.type === 'receive' || element.type === 'fallback') {
+    code = `${element.type}(`;
   } else {
     code = `${element.type} ${element.name}(`;
   }
@@ -33,7 +33,7 @@ export function getCodeFromAbi(element: AbiElement): string {
 
   code += ')';
 
-  if (element.type === 'function') {
+  if (element.type === 'function' || element.type === 'receive' || element.type === 'fallback') {
     code += ` external ${element.stateMutability}`;
   }
 
@@ -66,7 +66,15 @@ export function decodeAbi(abi: AbiElement[]): Doc {
   for (let i = 0; i < abi.length; i += 1) {
     const el = abi[i];
 
-    /*
+    if (['fallback', 'receive'].includes(el.type)) {
+      doc.methods[`${el.type}()`] = {
+        stateMutability: el.stateMutability,
+        code: getCodeFromAbi(el),
+        inputs: {},
+        outputs: {},
+      };
+    }
+
     if (el.type === 'constructor') {
       const func: Method = {
         stateMutability: el.stateMutability,
@@ -83,9 +91,9 @@ export function decodeAbi(abi: AbiElement[]): Doc {
         };
       });
 
+      /* eslint-disable */
       doc.methods['constructor'] = func;
     }
-    */
 
     if (el.type === 'function') {
       const func: Method = {
@@ -111,9 +119,7 @@ export function decodeAbi(abi: AbiElement[]): Doc {
         };
       });
 
-      doc.methods[`${el.name}(${
-        el.inputs ? el.inputs.map((inp) => inp.type).join(',') : ''
-      })`] = func;
+      doc.methods[`${el.name}(${el.inputs ? el.inputs.map((inp) => inp.type).join(',') : ''})`] = func;
     }
 
     if (el.type === 'event') {

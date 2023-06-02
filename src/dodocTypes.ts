@@ -90,11 +90,11 @@ export interface AbiElementPut {
 }
 
 export interface AbiElement {
-    type: 'constructor' | 'function' | 'event' | 'error';
-    name: string;
-    stateMutability?: string;
-    inputs: AbiElementPut[];
-    outputs: AbiElementPut[];
+  type: 'constructor' | 'function' | 'event' | 'error' | 'fallback' | 'receive';
+  name: string;
+  stateMutability?: string;
+  inputs: AbiElementPut[];
+  outputs: AbiElementPut[];
 }
 
 export interface Param {

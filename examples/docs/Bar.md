@@ -12,6 +12,48 @@ Manages the bar
 
 ## Methods
 
+### constructor
+
+```solidity
+constructor(uint256 someNumber)
+```
+
+This is the notice of the constructor
+*This is a constructor*
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| someNumber | uint256 | The description of the parameter |
+
+### fallback
+
+```solidity
+fallback(bytes calldata fallbackParam) external nonpayable returns (bytes memory testtest)
+```
+
+This is the notice of the fallback
+*This is a fallback*
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| fallbackParam | bytes | some details about the param |
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| testtest | bytes | result some details about the result |
+
 ### baap
 
 ```solidity
@@ -68,6 +110,24 @@ Alt cool function bro
 | bar | uint256 | undefined |
 | bar2 | uint256 | undefined |
 
+### hello
+
+```solidity
+function hello(bytes someCallData) external nonpayable
+```
+
+
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| someCallData | bytes | hello tic tac toe |
+
 ### set
 
 ```solidity
@@ -85,6 +145,19 @@ function set(IBar.T t) external nonpayable
 | Name | Type | Description |
 |---|---|---|
 | t | IBar.T | undefined |
+
+### receive
+
+```solidity
+receive() external payable
+```
+
+This is the notice of the `receive()` function
+*This is a `receive()` function*
+
+
+
+
 
 
 

@@ -3,11 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { extendConfig, task } from 'hardhat/config';
 import { TASK_COMPILE } from 'hardhat/builtin-tasks/task-names';
-import {
-  HardhatConfig,
-  HardhatRuntimeEnvironment,
-  HardhatUserConfig,
-} from 'hardhat/types';
+import { HardhatConfig, HardhatRuntimeEnvironment, HardhatUserConfig } from 'hardhat/types';
 import * as Sqrl from 'squirrelly';
 
 import { CompilerOutputContractWithDocumentation, Doc } from './dodocTypes';
@@ -29,9 +25,7 @@ extendConfig((config: HardhatConfig, userConfig: Readonly<HardhatUserConfig>) =>
   };
 });
 
-async function generateDocumentation(
-  hre: HardhatRuntimeEnvironment,
-): Promise<void> {
+async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<void> {
   const config = hre.config.dodoc;
   const docs: Doc[] = [];
 
@@ -63,7 +57,10 @@ async function generateDocumentation(
       console.log(JSON.stringify(info.devdoc, null, 4));
     }
 
-    const doc: Doc = { ...decodeAbi(info.abi), path: source.substr(sourcesPath.length).split('/').slice(0, -1).join('/') }; // get file path without filename
+    const doc: Doc = {
+      ...decodeAbi(info.abi),
+      path: source.substr(sourcesPath.length).split('/').slice(0, -1).join('/'),
+    }; // get file path without filename
 
     // Fetches info from userdoc
     for (const errorSig in info.userdoc?.errors) {
@@ -95,7 +92,8 @@ async function generateDocumentation(
       if (doc.errors[errorName] !== undefined) doc.errors[errorName].details = error?.details;
 
       for (const param in error?.params) {
-        if (doc.errors[errorName].inputs[param]) doc.errors[errorName].inputs[param].description = error?.params[param];
+        if (doc.errors[errorName].inputs[param])
+          doc.errors[errorName].inputs[param].description = error?.params[param];
       }
 
       for (const value in error) {
@@ -115,7 +113,8 @@ async function generateDocumentation(
       if (doc.events[eventName] !== undefined) doc.events[eventName].details = event?.details;
 
       for (const param in event?.params) {
-        if (doc.events[eventName].inputs[param]) doc.events[eventName].inputs[param].description = event?.params[param];
+        if (doc.events[eventName].inputs[param])
+          doc.events[eventName].inputs[param].description = event?.params[param];
       }
 
       for (const value in event) {
@@ -128,19 +127,119 @@ async function generateDocumentation(
       }
     }
 
+    // fetch manually Natspec tags from `receive()` and `fallback()` functions
+    // as these do not get included in the devdoc and userdoc from the solc output
+    if (doc.methods['receive()'] !== undefined || doc.methods['fallback()'] !== undefined) {
+      const astNodes = buildInfo?.output.sources[source].ast.nodes;
+
+      // find all AST node that is a `contract`
+      const contractNodes = astNodes.filter((node: any) => node.contractKind === 'contract');
+
+      contractNodes.forEach((node: any) => {
+        // find the `receive()` and `fallback()` functions
+        Array('receive', 'fallback').forEach((fn: any) => {
+          const astNode = node.nodes.find((node: any) => node.kind === fn);
+
+          // check if there are some Natspec docs included
+          if (astNode.hasOwnProperty('documentation')) {
+            const natspecTags = astNode.documentation.text.match(/@.*/g);
+
+            const devDoc = natspecTags.filter((text: string) => text.match(/@dev.*/));
+            const userDoc = natspecTags.filter((text: string) => text.match(/@notice.*/));
+
+            // add custom any `@custom:` tags
+            const customDocTags = natspecTags.filter((text: string) => text.match(/@custom:.*/));
+
+            if (customDocTags.length > 0) {
+              customDocTags.forEach((customDoc: any) => {
+                const customTag = customDoc.replace(/ .*/, '');
+                doc.methods[`${fn}()`][customTag] = customDoc.substring(customTag.length + 1);
+              });
+            }
+
+            // add the Natspec docs to the `receive()` and `fallback()` functions, stripping the `@` tags
+            doc.methods[`${fn}()`]['details'] = devDoc[0].substring(5);
+            doc.methods[`${fn}()`]['notice'] = userDoc[0].substring(8);
+
+            // parse any @param or @return tags if fallback function is written as
+            // `fallback(bytes calldata fallbackParam) external <payable> returns (bytes memory)`
+            if (fn === 'fallback') {
+              // we will always have only a single `@param` or `@return` tag for the fallback function
+              const paramDoc = natspecTags.filter((text: string) => text.match(/@param.*/));
+
+              if (paramDoc.length !== 0) {
+                const paramName = astNode.parameters.parameters[0].name;
+                doc.methods[`${fn}()`].inputs[paramName] = {
+                  type: 'bytes',
+                  description: paramDoc[0].replace(`@param ${paramName} `, ''),
+                };
+              }
+
+              const returnDoc = natspecTags.filter((text: string) => text.match(/@return.*/));
+
+              if (returnDoc.length !== 0) {
+                const returnVariableName =
+                  astNode.returnParameters.parameters[0].name == ''
+                    ? ''
+                    : astNode.returnParameters.parameters[0].name;
+
+                doc.methods[`${fn}()`].outputs[returnVariableName] = {
+                  type: 'bytes',
+                  description: returnDoc[0].replace(`@return ${returnVariableName} `, ''),
+                };
+              }
+
+              // modify the code if the fallback is written as `fallback(bytes calldata fallbackParam) external <payable> returns (bytes memory)`
+              if (
+                astNode.parameters.parameters.length == 1 &&
+                astNode.returnParameters.parameters.length == 1
+              ) {
+                const paramName =
+                  astNode.parameters.parameters[0].name === '' ? '' : astNode.parameters.parameters[0].name;
+
+                const returnVariableName =
+                  astNode.returnParameters.parameters[0].name === ''
+                    ? ''
+                    : astNode.returnParameters.parameters[0].name;
+
+                const stateMutability = astNode.stateMutability;
+
+                let newFallbackCode = `fallback(bytes calldata`;
+
+                if (paramName !== '') {
+                  newFallbackCode += ` ${paramName}`;
+                }
+
+                newFallbackCode += `) external ${stateMutability} returns (bytes memory`;
+
+                if (returnVariableName !== '') {
+                  newFallbackCode += ` ${returnVariableName}`;
+                }
+
+                newFallbackCode += ')';
+
+                doc.methods[`${fn}()`].code = newFallbackCode;
+              }
+            }
+          }
+        });
+      });
+    }
+
     for (const methodSig in info.devdoc?.methods) {
-      const [methodName] = methodSig.split('(');
       const method = info.devdoc?.methods[methodSig];
 
-      if (doc.methods[methodSig] !== undefined && methodName !== 'constructor') {
+      if (doc.methods[methodSig] !== undefined) {
         doc.methods[methodSig].details = method?.details;
 
         for (const param in method?.params) {
-          if (doc.methods[methodSig].inputs[param]) doc.methods[methodSig].inputs[param].description = method?.params[param];
+          if (doc.methods[methodSig].inputs[param])
+            doc.methods[methodSig].inputs[param].description = method?.params[param];
         }
 
         for (const output in method?.returns) {
-          if (doc.methods[methodSig].outputs[output]) doc.methods[methodSig].outputs[output].description = method?.returns[output];
+          if (doc.methods[methodSig].outputs[output])
+            doc.methods[methodSig].outputs[output].description = method?.returns[output];
         }
       }
 
@@ -156,20 +255,22 @@ async function generateDocumentation(
 
     for (const varName in info.devdoc?.stateVariables) {
       const variable = info.devdoc?.stateVariables[varName];
-      const abiInfo = info.abi.find((a:any) => a.name === varName);
+      const abiInfo = info.abi.find((a: any) => a.name === varName);
 
       const varNameWithParams = `${varName}(${
-        abiInfo?.inputs ? abiInfo.inputs.map((inp:any) => inp.type).join(',') : ''
+        abiInfo?.inputs ? abiInfo.inputs.map((inp: any) => inp.type).join(',') : ''
       })`;
 
       if (doc.methods[varNameWithParams]) doc.methods[varNameWithParams].details = variable?.details;
 
       for (const param in variable?.params) {
-        if (doc.methods[varNameWithParams].inputs[param]) doc.methods[varNameWithParams].inputs[param].description = variable?.params[param];
+        if (doc.methods[varNameWithParams].inputs[param])
+          doc.methods[varNameWithParams].inputs[param].description = variable?.params[param];
       }
 
       for (const output in variable?.returns) {
-        if (doc.methods[varNameWithParams].outputs[output]) doc.methods[varNameWithParams].outputs[output].description = variable?.returns[output];
+        if (doc.methods[varNameWithParams].outputs[output])
+          doc.methods[varNameWithParams].outputs[output].description = variable?.returns[output];
       }
     }
 
@@ -217,23 +318,24 @@ async function generateDocumentation(
     let docfileName = `${docs[i].name}.md`;
     let testFileName = `${docs[i].name}.json`;
     if (config.keepFileStructure && docs[i].path !== undefined) {
-      if (!fs.existsSync(path.join(config.outputDir, <string>docs[i].path))) await fs.promises.mkdir(path.join(config.outputDir, <string>docs[i].path), { recursive: true });
+      if (!fs.existsSync(path.join(config.outputDir, <string>docs[i].path)))
+        await fs.promises.mkdir(path.join(config.outputDir, <string>docs[i].path), {
+          recursive: true,
+        });
       docfileName = path.join(<string>docs[i].path, docfileName);
       testFileName = path.join(<string>docs[i].path, testFileName);
     }
-    await fs.promises.writeFile(
-      path.join(config.outputDir, docfileName),
-      result, {
-        encoding: 'utf-8',
-      },
-    );
+    await fs.promises.writeFile(path.join(config.outputDir, docfileName), result, {
+      encoding: 'utf-8',
+    });
 
     if (config.debugMode) {
       await fs.promises.writeFile(
         path.join(config.outputDir, testFileName),
-        JSON.stringify(docs[i], null, 4), {
+        JSON.stringify(docs[i], null, 4),
+        {
           encoding: 'utf-8',
-        },
+        }
       );
     }
   }
