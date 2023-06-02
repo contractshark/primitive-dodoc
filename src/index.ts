@@ -21,6 +21,7 @@ extendConfig((config: HardhatConfig, userConfig: Readonly<HardhatUserConfig>) =>
     templatePath: userConfig.dodoc?.templatePath || path.join(__dirname, './template.sqrl'),
     keepFileStructure: userConfig.dodoc?.keepFileStructure ?? true,
     freshOutput: userConfig.dodoc?.freshOutput ?? true,
+    helpers: userConfig.dodoc?.helpers || [],
   };
 });
 
@@ -318,13 +319,15 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
         doc.methods[methodSig].details = method?.details;
 
         for (const param in method?.params) {
-          if (doc.methods[methodSig].inputs[param])
-            doc.methods[methodSig].inputs[param].description = method?.params[param];
+          if (doc.methods[methodSig].inputs)
+            if (doc.methods[methodSig].inputs[param])
+              doc.methods[methodSig].inputs[param].description = method?.params[param];
         }
 
         for (const output in method?.returns) {
-          if (doc.methods[methodSig].outputs[output])
-            doc.methods[methodSig].outputs[output].description = method?.returns[output];
+          if (doc.methods[methodSig].outputs)
+            if (doc.methods[methodSig].outputs[output])
+              doc.methods[methodSig].outputs[output].description = method?.returns[output];
         }
       }
 
@@ -396,6 +399,9 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
   });
 
   for (let i = 0; i < docs.length; i += 1) {
+    config.helpers?.forEach((elem) => {
+      Sqrl.helpers.define(elem.helperName, elem.helperFunc);
+    });
     const result = Sqrl.render(template, docs[i]);
     let docfileName = `${docs[i].name}.md`;
     let testFileName = `${docs[i].name}.json`;
