@@ -127,103 +127,189 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
       }
     }
 
-    // fetch manually Natspec tags from `receive()` and `fallback()` functions
-    // as these do not get included in the devdoc and userdoc from the solc output
-    if (doc.methods['receive()'] !== undefined || doc.methods['fallback()'] !== undefined) {
-      const astNodes = buildInfo?.output.sources[source].ast.nodes;
+    /**
+     * @dev this function is intended to be used only to parse the `receive` and `fallback` function so far.
+     * Caution if using this function to parse the Natspec of other methods from the AST
+     */
+    const parseNatspecFromAST = (functionName: 'receive' | 'fallback', functionASTNode: any) => {
+      const tags = functionASTNode.documentation.text.split('@');
 
-      // find all AST node that is a `contract`
-      const contractNodes = astNodes.filter((node: any) => node.contractKind === 'contract');
+      tags.forEach((natspecTag: any) => {
+        if (natspecTag.replace(' ', '').length === 0) {
+          return;
+        }
 
-      contractNodes.forEach((node: any) => {
-        // find the `receive()` and `fallback()` functions
-        Array('receive', 'fallback').forEach((fn: any) => {
-          const astNode = node.nodes.find((node: any) => node.kind === fn);
+        if (natspecTag.startsWith('dev ')) {
+          doc.methods[`${functionName}()`]['details'] = natspecTag.replace('dev ', '').trim();
+        }
 
-          // check if there are some Natspec docs included
-          if (astNode?.hasOwnProperty('documentation')) {
-            const natspecTags = astNode.documentation.text.match(/@.*/g);
+        if (natspecTag.startsWith('notice ')) {
+          doc.methods[`${functionName}()`]['notice'] = natspecTag.replace('notice ', '').trim();
+        }
 
-            const devDoc = natspecTags.filter((text: string) => text.match(/@dev.*/));
-            const userDoc = natspecTags.filter((text: string) => text.match(/@notice.*/));
-
-            // add custom any `@custom:` tags
-            const customDocTags = natspecTags.filter((text: string) => text.match(/@custom:.*/));
-
-            if (customDocTags.length > 0) {
-              customDocTags.forEach((customDoc: any) => {
-                const customTag = customDoc.replace(/ .*/, '');
-                doc.methods[`${fn}()`][customTag] = customDoc.substring(customTag.length + 1);
-              });
-            }
-
-            // add the Natspec docs to the `receive()` and `fallback()` functions, stripping the `@` tags
-            doc.methods[`${fn}()`]['details'] = devDoc[0].substring(5);
-            doc.methods[`${fn}()`]['notice'] = userDoc[0].substring(8);
-
-            // parse any @param or @return tags if fallback function is written as
-            // `fallback(bytes calldata fallbackParam) external <payable> returns (bytes memory)`
-            if (fn === 'fallback') {
-              // we will always have only a single `@param` or `@return` tag for the fallback function
-              const paramDoc = natspecTags.filter((text: string) => text.match(/@param.*/));
-
-              if (paramDoc.length !== 0) {
-                const paramName = astNode.parameters.parameters[0].name;
-                doc.methods[`${fn}()`].inputs[paramName] = {
-                  type: 'bytes',
-                  description: paramDoc[0].replace(`@param ${paramName} `, ''),
-                };
-              }
-
-              const returnDoc = natspecTags.filter((text: string) => text.match(/@return.*/));
-
-              if (returnDoc.length !== 0) {
-                const returnVariableName =
-                  astNode.returnParameters.parameters[0].name == ''
-                    ? ''
-                    : astNode.returnParameters.parameters[0].name;
-
-                doc.methods[`${fn}()`].outputs[returnVariableName] = {
-                  type: 'bytes',
-                  description: returnDoc[0].replace(`@return ${returnVariableName} `, ''),
-                };
-              }
-
-              // modify the code if the fallback is written as `fallback(bytes calldata fallbackParam) external <payable> returns (bytes memory)`
-              if (
-                astNode.parameters.parameters.length == 1 &&
-                astNode.returnParameters.parameters.length == 1
-              ) {
-                const paramName =
-                  astNode.parameters.parameters[0].name === '' ? '' : astNode.parameters.parameters[0].name;
-
-                const returnVariableName =
-                  astNode.returnParameters.parameters[0].name === ''
-                    ? ''
-                    : astNode.returnParameters.parameters[0].name;
-
-                const stateMutability = astNode.stateMutability;
-
-                let newFallbackCode = `fallback(bytes calldata`;
-
-                if (paramName !== '') {
-                  newFallbackCode += ` ${paramName}`;
-                }
-
-                newFallbackCode += `) external ${stateMutability} returns (bytes memory`;
-
-                if (returnVariableName !== '') {
-                  newFallbackCode += ` ${returnVariableName}`;
-                }
-
-                newFallbackCode += ')';
-
-                doc.methods[`${fn}()`].code = newFallbackCode;
-              }
-            }
-          }
-        });
+        // add custom any `@custom:` tags
+        if (natspecTag.startsWith('custom:')) {
+          const customTagName = natspecTag.substring('custom:'.length, natspecTag.trim().indexOf(' '));
+          doc.methods[`${functionName}()`][`custom:${customTagName}`] = natspecTag.replace(
+            `custom:${customTagName} `,
+            ''
+          );
+        }
       });
+    };
+
+    // transform the code field in the user doc from `fallback() external` to `fallback(bytes calldata paramName) external returns (bytes memory)`
+    const modifyFallbackFunctionSyntax = (fallbackASTNode: any) => {
+      const paramVariableName = fallbackASTNode.parameters.parameters[0].name;
+      const returnVariableName = fallbackASTNode.returnParameters.parameters[0].name;
+      const stateMutability = fallbackASTNode.stateMutability;
+
+      let newFallbackCode = `fallback(bytes calldata`;
+
+      if (paramVariableName !== '') {
+        newFallbackCode += ` ${paramVariableName}`;
+      }
+
+      newFallbackCode += `) external ${stateMutability} returns (bytes memory`;
+
+      if (returnVariableName !== '') {
+        newFallbackCode += ` ${returnVariableName}`;
+      }
+
+      newFallbackCode += ')';
+
+      doc.methods[`fallback()`].code = newFallbackCode;
+    };
+
+    const parseParamsAndReturnNatspecsForFallback = (fallbackASTNode: any) => {
+      const paramDoc = fallbackASTNode.documentation.text
+        .match(/@.*/g)
+        .filter((text: string) => text.match(/@param.*/));
+
+      if (paramDoc.length !== 0) {
+        const paramName = fallbackASTNode.parameters.parameters[0].name;
+        doc.methods[`fallback()`].inputs[paramName] = {
+          type: 'bytes',
+          description: paramDoc[0].replace(`@param ${paramName} `, ''),
+        };
+      }
+
+      const returnDoc = fallbackASTNode.documentation.text
+        .match(/@.*/g)
+        .filter((text: string) => text.match(/@return.*/));
+
+      if (returnDoc.length !== 0) {
+        const returnVariableName =
+          fallbackASTNode.returnParameters.parameters[0].name == ''
+            ? ''
+            : fallbackASTNode.returnParameters.parameters[0].name;
+
+        doc.methods[`fallback()`].outputs[returnVariableName] = {
+          type: 'bytes',
+          description: returnDoc[0].replace(`@return ${returnVariableName} `, ''),
+        };
+      }
+    };
+
+    const parseNatspecFromFallback = (fallbackASTNode: any) => {
+      parseNatspecFromAST('fallback', fallbackASTNode);
+
+      // parse any @param or @return tags if fallback function is written as
+      // `fallback(bytes calldata fallbackParam) external <payable> returns (bytes memory)`
+      //
+      // Note: we should ideally have only a single `@param` or `@return` tag in this case
+      parseParamsAndReturnNatspecsForFallback(fallbackASTNode);
+
+      // modify the code if the fallback is written as `fallback(bytes calldata fallbackParam) external <payable> returns (bytes memory)`
+      if (
+        fallbackASTNode.parameters.parameters.length == 1 &&
+        fallbackASTNode.returnParameters.parameters.length == 1
+      ) {
+        modifyFallbackFunctionSyntax(fallbackASTNode);
+      }
+    };
+
+    // Natspec docs from `receive()` and `fallback()` functions are not included in devdoc or userdoc
+    // Need to be fetched manually from AST
+    const AST = buildInfo?.output.sources[source].ast.nodes;
+
+    // find all AST nodes that are `contract`
+    const contractNode = AST.filter((node: any) => node.contractKind === 'contract')[0];
+
+    if (doc.methods['receive()'] !== undefined) {
+      const receiveASTNode = contractNode.nodes.find((node: any) => node.kind === 'receive');
+
+      if (receiveASTNode !== undefined && receiveASTNode.hasOwnProperty('documentation')) {
+        parseNatspecFromAST('receive', receiveASTNode);
+      } else {
+        // search in the parent contracts
+        if (contractNode.hasOwnProperty('baseContracts')) {
+          contractNode.baseContracts.forEach((baseContract: any) => {
+            for (const inheritedSource in buildInfo?.output.sources) {
+              const inheritedContractAST = buildInfo?.output.sources[inheritedSource].ast.nodes.filter(
+                (node: any) => node.contractKind === 'contract'
+              );
+
+              if (
+                inheritedContractAST.length > 0 &&
+                baseContract.baseName.referencedDeclaration === inheritedContractAST[0].id
+              ) {
+                const receiveParentASTNode = inheritedContractAST[0].nodes.find(
+                  (node: any) => node.kind === 'receive'
+                );
+
+                if (
+                  receiveParentASTNode !== undefined &&
+                  receiveParentASTNode.hasOwnProperty('documentation')
+                ) {
+                  parseNatspecFromAST('receive', receiveParentASTNode);
+                  // stop searching as soon as we find the most overriden function in the most derived contract
+                  break;
+                }
+              }
+            }
+          });
+        }
+      }
+    }
+
+    if (doc.methods['fallback()'] !== undefined) {
+      // look for the `fallback()` function
+      const fallbackASTNode = contractNode.nodes.find((node: any) => node.kind === 'fallback');
+
+      if (fallbackASTNode !== undefined && fallbackASTNode.hasOwnProperty('documentation')) {
+        parseNatspecFromFallback(fallbackASTNode);
+      } else {
+        // search in the parent contracts
+        if (contractNode.hasOwnProperty('baseContracts')) {
+          contractNode.baseContracts.forEach((baseContract: any) => {
+            for (const inheritedSource in buildInfo?.output.sources) {
+              const inheritedContractAST = buildInfo?.output.sources[inheritedSource].ast.nodes.filter(
+                (node: any) => node.contractKind === 'contract'
+              );
+
+              if (
+                inheritedContractAST.length > 0 &&
+                baseContract.baseName.referencedDeclaration === inheritedContractAST[0].id
+              ) {
+                const fallbackParentASTNode = inheritedContractAST[0].nodes.find(
+                  (node: any) => node.kind === 'fallback'
+                );
+
+                if (
+                  fallbackParentASTNode !== undefined &&
+                  fallbackParentASTNode.hasOwnProperty('documentation')
+                ) {
+                  parseNatspecFromFallback(fallbackParentASTNode);
+
+                  // stop searching as soon as we find the most overriden function in the most derived contract
+                  break;
+                }
+              }
+            }
+          });
+        }
+      }
     }
 
     for (const methodSig in info.devdoc?.methods) {
