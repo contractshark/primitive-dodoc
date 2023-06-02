@@ -359,8 +359,6 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
       }
     }
 
-    console.log(doc.methods);
-
     // Fetches global info
     if (info.devdoc?.title) doc.title = info.devdoc.title;
     if (info.userdoc?.notice) doc.notice = info.userdoc.notice;
