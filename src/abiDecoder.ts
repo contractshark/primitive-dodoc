@@ -1,6 +1,4 @@
-import {
-  AbiElement, Doc, Method, Error, Event,
-} from './dodocTypes';
+import { AbiElement, Doc, Method, Error, Event } from './dodocTypes';
 
 export function getCodeFromAbi(element: AbiElement): string {
   let code;
@@ -35,7 +33,7 @@ export function getCodeFromAbi(element: AbiElement): string {
 
   code += ')';
 
-  if (element.type === 'function') {
+  if (element.type === 'function' || element.type === 'receive' || element.type === 'fallback') {
     code += ` external ${element.stateMutability}`;
   }
 
@@ -121,9 +119,7 @@ export function decodeAbi(abi: AbiElement[]): Doc {
         };
       });
 
-      doc.methods[`${el.name}(${
-        el.inputs ? el.inputs.map((inp) => inp.type).join(',') : ''
-      })`] = func;
+      doc.methods[`${el.name}(${el.inputs ? el.inputs.map((inp) => inp.type).join(',') : ''})`] = func;
     }
 
     if (el.type === 'event') {

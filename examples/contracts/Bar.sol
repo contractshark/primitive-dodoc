@@ -53,7 +53,11 @@ contract Bar is IBar {
     /// @dev This is a fallback
     /// @notice This is the notice of the fallback
     /// @custom:warning the fallback function can return some data via assembly, but it will not be abi-encoded
-    fallback() external payable {
+    /// @param fallbackParam some details about the param
+    /// @return testtest result some details about the result
+    /// @custom:hey hey hey hey
+    /// @custom:ho ho ho ho
+    fallback(bytes calldata fallbackParam) external returns (bytes memory testtest) {
         // ...
     }
 
@@ -67,6 +71,11 @@ contract Bar is IBar {
 
     /// @notice Alt cool function bro
     function boop(uint256 bar, uint256 bar2) external { }
+
+    /// @param someCallData hello tic tac toe
+    function hello(bytes calldata someCallData) external {
+
+    }
 
     /// @notice Baaps the yaps
     /// @param bar Number of bar

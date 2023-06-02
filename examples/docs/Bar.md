@@ -33,15 +33,26 @@ This is the notice of the constructor
 ### fallback
 
 ```solidity
-fallback()
+fallback(bytes calldata fallbackParam) external nonpayable returns (bytes memory testtest)
 ```
 
+This is the notice of the fallback
+*This is a fallback*
 
 
 
 
+#### Parameters
 
+| Name | Type | Description |
+|---|---|---|
+| fallbackParam | bytes | some details about the param |
 
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| testtest | bytes | result some details about the result |
 
 ### baap
 
@@ -99,6 +110,24 @@ Alt cool function bro
 | bar | uint256 | undefined |
 | bar2 | uint256 | undefined |
 
+### hello
+
+```solidity
+function hello(bytes someCallData) external nonpayable
+```
+
+
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| someCallData | bytes | hello tic tac toe |
+
 ### set
 
 ```solidity
@@ -120,11 +149,11 @@ function set(IBar.T t) external nonpayable
 ### receive
 
 ```solidity
-receive()
+receive() external payable
 ```
 
-
-
+This is the notice of the `receive()` function
+*This is a `receive()` function*
 
 
 
