@@ -141,7 +141,7 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
           const astNode = node.nodes.find((node: any) => node.kind === fn);
 
           // check if there are some Natspec docs included
-          if (astNode.hasOwnProperty('documentation')) {
+          if (astNode?.hasOwnProperty('documentation')) {
             const natspecTags = astNode.documentation.text.match(/@.*/g);
 
             const devDoc = natspecTags.filter((text: string) => text.match(/@dev.*/));
@@ -233,13 +233,15 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
         doc.methods[methodSig].details = method?.details;
 
         for (const param in method?.params) {
-          if (doc.methods[methodSig].inputs[param])
-            doc.methods[methodSig].inputs[param].description = method?.params[param];
+          if (doc.methods[methodSig].inputs)
+            if (doc.methods[methodSig].inputs[param])
+              doc.methods[methodSig].inputs[param].description = method?.params[param];
         }
 
         for (const output in method?.returns) {
-          if (doc.methods[methodSig].outputs[output])
-            doc.methods[methodSig].outputs[output].description = method?.returns[output];
+          if (doc.methods[methodSig].outputs)
+            if (doc.methods[methodSig].outputs[output])
+              doc.methods[methodSig].outputs[output].description = method?.returns[output];
         }
       }
 
