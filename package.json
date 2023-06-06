@@ -1,15 +1,12 @@
 {
-  "name": "@b00ste/primitive-dodoc",
+  "name": "@b00ste/hardhat-dodoc",
   "version": "0.3.0",
   "description": "Zero-config Hardhat plugin to generate documentation for all your Solidity contracts",
-  "repository": "github:b00ste/primitive-dodoc",
+  "repository": "github:b00ste/hardhat-dodoc",
   "author": "Primitive",
   "license": "MIT",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
-  "publishConfig": {
-    "@b00ste:registry": "https://npm.pkg.github.com"
-  },
   "keywords": [
     "ethereum",
     "smart-contracts",

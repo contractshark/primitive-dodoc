@@ -1,6 +1,6 @@
 # Dodoc
 
-![version](https://img.shields.io/npm/v/@primitivefi/hardhat-dodoc) ![npm](https://img.shields.io/npm/dt/@primitivefi/hardhat-dodoc) ![license](https://img.shields.io/npm/l/@primitivefi/hardhat-dodoc)
+![version](https://img.shields.io/npm/v/@b00ste/hardhat-dodoc) ![npm](https://img.shields.io/npm/dt/@b00ste/hardhat-dodoc) ![license](https://img.shields.io/npm/l/@b00ste/hardhat-dodoc)
 
 Zero-config Hardhat plugin to generate documentation for all your Solidity contracts.
 
@@ -18,20 +18,20 @@ First thing to do is to install the plugin in your Hardhat project:
 
 ```bash
 # Using yarn
-yarn add @primitivefi/hardhat-dodoc
+yarn add @b00ste/hardhat-dodoc
 
 # Or using npm
-npm i @primitivefi/hardhat-dodoc
+npm i @b00ste/hardhat-dodoc
 ```
 
 Next step is simply to include the plugin into your `hardhat.config.js` or `hardhat.config.ts` file:
 
 ```typescript
 // Using JavaScript
-require('@primitivefi/hardhat-dodoc');
+require('@b00ste/hardhat-dodoc');
 
 // Using ES6 or TypeScript
-import '@primitivefi/hardhat-dodoc';
+import '@b00ste/hardhat-dodoc';
 ```
 
 And you're done! Documentation will be automatically generated on the next compilation and saved into the `docs` folder at the root of your project.
@@ -45,6 +45,9 @@ The only requirement to use Dodoc is to comment your Solidity contracts using [N
 /// @dev More info about doing another thing when the function is called.
 /// @param num A random number
 /// @return A random variable
+/// @custom:requirement Must be at lease 18 years old to use this function.
+/// @custom:danger Another thing is extremely random, use at your own risk!
+/// @custom:info Another thing 2 coming soon.
 function anotherThing(uint256 num) external pure returns (uint256);
 ```
 
@@ -60,19 +63,25 @@ Dodoc will take care of everything and will generate the following output:
 >
 > Does another thing when the function is called.
 >
-> *More info about doing another thing when the function is called.*
+> _More info about doing another thing when the function is called._
+>
+> **Requirement:** _Must be at lease 18 years old to use this function._
+>
+> **Danager:** _Another thing is extremely random, use at your own risk!_
+>
+> **Info:** _Another thing 2 coming soon._
 >
 > #### Parameters
 >
-> | Name | Type | Description |
-> |---|---|---|
-> | num | uint256 | A random number |
+> | Name | Type    | Description     |
+> | ---- | ------- | --------------- |
+> | num  | uint256 | A random number |
 >
 > #### Returns
 >
-> | Name | Type | Description |
-> |---|---|---|
-> | _0 | uint256 | A random variable |
+> | Name | Type    | Description       |
+> | ---- | ------- | ----------------- |
+> | \_0  | uint256 | A random variable |
 
 Dodoc is compatible with all the NatSpec tags (except custom ones for now), and can generate documentation for events, custom errors and external / public functions.
 
@@ -94,7 +103,7 @@ Dodoc comes with a default configuration but you can still tweak some parameters
 import { HardhatUserConfig } from 'hardhat/config';
 import '@nomiclabs/hardhat-waffle';
 import '@nomiclabs/hardhat-ethers';
-import '@primitivefi/hardhat-dodoc';
+import '@b00ste/hardhat-dodoc';
 
 const config: HardhatUserConfig = {
   // Your Hardhat config...
@@ -110,16 +119,17 @@ export default config;
 
 Here are all the configuration parameters that are currently available, but as said above, all of them are entirely optional:
 
-| Parameter           | Description                                                                                                                                                | Default value     |
-|---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
-| `runOnCompile`      | True if the plugin should generate the documentation on every compilation                                                                                  | `true`            |
-| `include`           | List of all the contract / interface / library / folder names to include in the documentation generation. An empty array will generate documentation for everything | `[]`              |
-| `exclude`           | List of all the contract / interface / library / folder names to exclude from the documentation generation                                                          | `[]`              |
-| `outputDir`         | Output directory of the documentation                                                                                                                      | `docs`            |
-| `templatePath`      | Path to the documentation template                                                                                                                         | `./template.sqrl` |
-| `debugMode`          | Test mode generating additional JSON files used for debugging                                                                                              | `false`           |
-| `keepFileStructure` | True if you want to preserve your contracts file structure in the output directory                                                                                                 | `true`            |
-| `freshOutput` | True if you want to clean the output directory before generating new documentation | `true` |
+| Parameter           | Description                                                                                                                                                                                                  | Default value     |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------- |
+| `runOnCompile`      | True if the plugin should generate the documentation on every compilation                                                                                                                                    | `true`            |
+| `include`           | List of all the contract / interface / library / folder names to include in the documentation generation. An empty array will generate documentation for everything                                          | `[]`              |
+| `exclude`           | List of all the contract / interface / library / folder names to exclude from the documentation generation                                                                                                   | `[]`              |
+| `outputDir`         | Output directory of the documentation                                                                                                                                                                        | `docs`            |
+| `templatePath`      | Path to the documentation template                                                                                                                                                                           | `./template.sqrl` |
+| `debugMode`         | Test mode generating additional JSON files used for debugging                                                                                                                                                | `false`           |
+| `keepFileStructure` | True if you want to preserve your contracts file structure in the output directory                                                                                                                           | `true`            |
+| `freshOutput`       | True if you want to clean the output directory before generating new documentation                                                                                                                           | `true`            |
+| `helpers`           | List of objects with `helperName` & `helperFunc`, `helperFunc` MUST be of type [**HelperFunction**](https://squirrellyjs.github.io/squirrelly/modules/_containers_.html#helperfunction) from _squirrelly.js_ | `[]`              |
 
 ## 💅 Customize
 
@@ -132,8 +142,7 @@ Once you're satisfied, simply refer to your template using the `templatePath` pa
 ## ⛑ Help
 
 Feel free to open an issue if you need help or if you encounter a problem! Here are some already known problems though:
+
 - Due to the technical limitations of the Solidity compiler, the documentation of `private` and `internal` functions is not rendered. Hence, the documentation of libraries might be close to empty!
 - Functions that are not commented at all might not be rendered.
 - State variables overriding functions defined by an interface might "erase" the name of the parameters. A current workaround is to name the function parameters using the `_0`, `_1`, ... format.
-- Special functions such as `constructor`, `fallback` and `receive` might not be rendered.
-- Custom NatSpec tags `@custom:...` are not rendered (yet).
