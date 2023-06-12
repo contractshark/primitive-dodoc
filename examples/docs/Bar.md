@@ -156,7 +156,7 @@ This is the notice of the `receive()` function
 *This is a `receive()` function*
 
 
-
+**Info:** *if sending native tokens with some graffiti, check the {`fallback()`} function documentation.*
 
 
 

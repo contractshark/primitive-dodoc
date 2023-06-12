@@ -130,6 +130,7 @@ Here are all the configuration parameters that are currently available, but as s
 | `keepFileStructure` | True if you want to preserve your contracts file structure in the output directory                                                                                                                           | `true`            |
 | `freshOutput`       | True if you want to clean the output directory before generating new documentation                                                                                                                           | `true`            |
 | `helpers`           | List of objects with `helperName` & `helperFunc`, `helperFunc` MUST be of type [**HelperFunction**](https://squirrellyjs.github.io/squirrelly/modules/_containers_.html#helperfunction) from _squirrelly.js_ | `[]`              |
+| `libraries`         | Used to separate the generated docs into two caterories: 1. _contracts_ & 2. _libraries_. Add the name of the library to the array if you want to separate it to the libraries folder                        | `[]`              |
 
 ## 💅 Customize
 

@@ -15,6 +15,7 @@ extendConfig((config: HardhatConfig, userConfig: Readonly<HardhatUserConfig>) =>
   config.dodoc = {
     include: userConfig.dodoc?.include || [],
     exclude: userConfig.dodoc?.exclude || [],
+    libraries: userConfig.dodoc?.libraries || [],
     runOnCompile: userConfig.dodoc?.runOnCompile !== undefined ? userConfig.dodoc?.runOnCompile : true,
     debugMode: userConfig.dodoc?.debugMode || false,
     outputDir: userConfig.dodoc?.outputDir || './docs',
@@ -92,8 +93,9 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
       if (doc.errors[errorName] !== undefined) doc.errors[errorName].details = error?.details;
 
       for (const param in error?.params) {
-        if (doc.errors[errorName].inputs[param])
+        if (doc.errors[errorName].inputs[param]) {
           doc.errors[errorName].inputs[param].description = error?.params[param];
+        }
       }
 
       for (const value in error) {
@@ -113,8 +115,9 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
       if (doc.events[eventName] !== undefined) doc.events[eventName].details = event?.details;
 
       for (const param in event?.params) {
-        if (doc.events[eventName].inputs[param])
+        if (doc.events[eventName].inputs[param]) {
           doc.events[eventName].inputs[param].description = event?.params[param];
+        }
       }
 
       for (const value in event) {
@@ -140,11 +143,11 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
         }
 
         if (natspecTag.startsWith('dev ')) {
-          doc.methods[`${functionName}()`]['details'] = natspecTag.replace('dev ', '').trim();
+          doc.methods[`${functionName}()`].details = natspecTag.replace('dev ', '').trim();
         }
 
         if (natspecTag.startsWith('notice ')) {
-          doc.methods[`${functionName}()`]['notice'] = natspecTag.replace('notice ', '').trim();
+          doc.methods[`${functionName}()`].notice = natspecTag.replace('notice ', '').trim();
         }
 
         // add custom any `@custom:` tags
@@ -152,7 +155,7 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
           const customTagName = natspecTag.substring('custom:'.length, natspecTag.trim().indexOf(' '));
           doc.methods[`${functionName}()`][`custom:${customTagName}`] = natspecTag.replace(
             `custom:${customTagName} `,
-            ''
+            '',
           );
         }
       });
@@ -162,9 +165,9 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
     const modifyFallbackFunctionSyntax = (fallbackASTNode: any) => {
       const paramVariableName = fallbackASTNode.parameters.parameters[0].name;
       const returnVariableName = fallbackASTNode.returnParameters.parameters[0].name;
-      const stateMutability = fallbackASTNode.stateMutability;
+      const { stateMutability } = fallbackASTNode;
 
-      let newFallbackCode = `fallback(bytes calldata`;
+      let newFallbackCode = 'fallback(bytes calldata';
 
       if (paramVariableName !== '') {
         newFallbackCode += ` ${paramVariableName}`;
@@ -178,7 +181,7 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
 
       newFallbackCode += ')';
 
-      doc.methods[`fallback()`].code = newFallbackCode;
+      doc.methods['fallback()'].code = newFallbackCode;
     };
 
     const parseParamsAndReturnNatspecsForFallback = (fallbackASTNode: any) => {
@@ -188,7 +191,7 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
 
       if (paramDoc.length !== 0) {
         const paramName = fallbackASTNode.parameters.parameters[0].name;
-        doc.methods[`fallback()`].inputs[paramName] = {
+        doc.methods['fallback()'].inputs[paramName] = {
           type: 'bytes',
           description: paramDoc[0].replace(`@param ${paramName} `, ''),
         };
@@ -200,11 +203,11 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
 
       if (returnDoc.length !== 0) {
         const returnVariableName =
-          fallbackASTNode.returnParameters.parameters[0].name == ''
+          fallbackASTNode.returnParameters.parameters[0].name === ''
             ? ''
             : fallbackASTNode.returnParameters.parameters[0].name;
 
-        doc.methods[`fallback()`].outputs[returnVariableName] = {
+        doc.methods['fallback()'].outputs[returnVariableName] = {
           type: 'bytes',
           description: returnDoc[0].replace(`@return ${returnVariableName} `, ''),
         };
@@ -222,8 +225,8 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
 
       // modify the code if the fallback is written as `fallback(bytes calldata fallbackParam) external <payable> returns (bytes memory)`
       if (
-        fallbackASTNode.parameters.parameters.length == 1 &&
-        fallbackASTNode.returnParameters.parameters.length == 1
+        fallbackASTNode.parameters.parameters.length === 1 &&
+        fallbackASTNode.returnParameters.parameters.length === 1
       ) {
         modifyFallbackFunctionSyntax(fallbackASTNode);
       }
@@ -243,11 +246,12 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
         parseNatspecFromAST('receive', receiveASTNode);
       } else {
         // search in the parent contracts
+        // eslint-disable-next-line no-lonely-if
         if (contractNode.hasOwnProperty('baseContracts')) {
           contractNode.baseContracts.forEach((baseContract: any) => {
             for (const inheritedSource in buildInfo?.output.sources) {
               const inheritedContractAST = buildInfo?.output.sources[inheritedSource].ast.nodes.filter(
-                (node: any) => node.contractKind === 'contract'
+                (node: any) => node.contractKind === 'contract',
               );
 
               if (
@@ -255,7 +259,7 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
                 baseContract.baseName.referencedDeclaration === inheritedContractAST[0].id
               ) {
                 const receiveParentASTNode = inheritedContractAST[0].nodes.find(
-                  (node: any) => node.kind === 'receive'
+                  (node: any) => node.kind === 'receive',
                 );
 
                 if (
@@ -281,11 +285,12 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
         parseNatspecFromFallback(fallbackASTNode);
       } else {
         // search in the parent contracts
+        // eslint-disable-next-line no-lonely-if, no-prototype-builtins
         if (contractNode.hasOwnProperty('baseContracts')) {
           contractNode.baseContracts.forEach((baseContract: any) => {
             for (const inheritedSource in buildInfo?.output.sources) {
               const inheritedContractAST = buildInfo?.output.sources[inheritedSource].ast.nodes.filter(
-                (node: any) => node.contractKind === 'contract'
+                (node: any) => node.contractKind === 'contract',
               );
 
               if (
@@ -293,7 +298,7 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
                 baseContract.baseName.referencedDeclaration === inheritedContractAST[0].id
               ) {
                 const fallbackParentASTNode = inheritedContractAST[0].nodes.find(
-                  (node: any) => node.kind === 'fallback'
+                  (node: any) => node.kind === 'fallback',
                 );
 
                 if (
@@ -319,15 +324,19 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
         doc.methods[methodSig].details = method?.details;
 
         for (const param in method?.params) {
-          if (doc.methods[methodSig].inputs)
-            if (doc.methods[methodSig].inputs[param])
+          if (doc.methods[methodSig].inputs) {
+            if (doc.methods[methodSig].inputs[param]) {
               doc.methods[methodSig].inputs[param].description = method?.params[param];
+            }
+          }
         }
 
         for (const output in method?.returns) {
-          if (doc.methods[methodSig].outputs)
-            if (doc.methods[methodSig].outputs[output])
+          if (doc.methods[methodSig].outputs) {
+            if (doc.methods[methodSig].outputs[output]) {
               doc.methods[methodSig].outputs[output].description = method?.returns[output];
+            }
+          }
         }
       }
 
@@ -352,13 +361,15 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
       if (doc.methods[varNameWithParams]) doc.methods[varNameWithParams].details = variable?.details;
 
       for (const param in variable?.params) {
-        if (doc.methods[varNameWithParams].inputs[param])
+        if (doc.methods[varNameWithParams].inputs[param]) {
           doc.methods[varNameWithParams].inputs[param].description = variable?.params[param];
+        }
       }
 
       for (const output in variable?.returns) {
-        if (doc.methods[varNameWithParams].outputs[output])
+        if (doc.methods[varNameWithParams].outputs[output]) {
           doc.methods[varNameWithParams].outputs[output].description = variable?.returns[output];
+        }
       }
     }
 
@@ -406,25 +417,87 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
     let docfileName = `${docs[i].name}.md`;
     let testFileName = `${docs[i].name}.json`;
     if (config.keepFileStructure && docs[i].path !== undefined) {
-      if (!fs.existsSync(path.join(config.outputDir, <string>docs[i].path)))
-        await fs.promises.mkdir(path.join(config.outputDir, <string>docs[i].path), {
-          recursive: true,
-        });
+      if (!fs.existsSync(path.join(config.outputDir, <string>docs[i].path))) {
+        if (config.libraries.length === 0) {
+          await fs.promises.mkdir(path.join(config.outputDir, <string>docs[i].path), {
+            recursive: true,
+          });
+        } else {
+          const { name } = docs[i];
+          let { outputDir } = config;
+          if (name !== undefined) {
+            outputDir = config.libraries.includes(name)
+              ? `${config.outputDir}/libraries`
+              : `${config.outputDir}/contracts`;
+          }
+
+          try {
+            await fs.promises.access(outputDir);
+          } catch (e) {
+            await fs.promises.mkdir(outputDir);
+          }
+
+          await fs.promises.mkdir(path.join(outputDir, <string>docs[i].path), {
+            recursive: true,
+          });
+        }
+      }
       docfileName = path.join(<string>docs[i].path, docfileName);
       testFileName = path.join(<string>docs[i].path, testFileName);
     }
-    await fs.promises.writeFile(path.join(config.outputDir, docfileName), result, {
-      encoding: 'utf-8',
-    });
+
+    if (config.libraries.length === 0) {
+      await fs.promises.writeFile(path.join(config.outputDir, docfileName), result, {
+        encoding: 'utf-8',
+      });
+    } else {
+      const { name } = docs[i];
+      let { outputDir } = config;
+      if (name !== undefined) {
+        outputDir = config.libraries.includes(name)
+          ? `${config.outputDir}/libraries`
+          : `${config.outputDir}/contracts`;
+      }
+
+      try {
+        await fs.promises.access(outputDir);
+      } catch (e) {
+        await fs.promises.mkdir(outputDir);
+      }
+
+      await fs.promises.writeFile(path.join(outputDir, docfileName), result, {
+        encoding: 'utf-8',
+      });
+    }
 
     if (config.debugMode) {
-      await fs.promises.writeFile(
-        path.join(config.outputDir, testFileName),
-        JSON.stringify(docs[i], null, 4),
-        {
-          encoding: 'utf-8',
+      if (config.libraries.length === 0) {
+        await fs.promises.writeFile(
+          path.join(config.outputDir, testFileName),
+          JSON.stringify(docs[i], null, 4),
+          {
+            encoding: 'utf-8',
+          },
+        );
+      } else {
+        const { name } = docs[i];
+        let { outputDir } = config;
+        if (name !== undefined) {
+          outputDir = config.libraries.includes(name)
+            ? `${config.outputDir}/libraries`
+            : `${config.outputDir}/contracts`;
         }
-      );
+
+        try {
+          await fs.promises.access(outputDir);
+        } catch (e) {
+          await fs.promises.mkdir(outputDir);
+        }
+
+        await fs.promises.writeFile(path.join(outputDir, testFileName), JSON.stringify(docs[i], null, 4), {
+          encoding: 'utf-8',
+        });
+      }
     }
   }
 
