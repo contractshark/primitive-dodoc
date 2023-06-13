@@ -6,27 +6,29 @@ declare module 'hardhat/types/config' {
     dodoc?: {
       include?: string[];
       exclude?: string[];
+      libraries?: string[];
       runOnCompile?: boolean;
       debugMode?: boolean;
       templatePath?: string;
       outputDir?: string;
       keepFileStructure?: boolean;
       freshOutput?: boolean;
-      helpers?: { helperName: string; helperFunc: HelperFunction }[]
-    }
+      helpers?: { helperName: string; helperFunc: HelperFunction }[];
+    };
   }
 
   export interface HardhatConfig {
     dodoc: {
       include: string[];
       exclude: string[];
+      libraries: string[];
       runOnCompile: boolean;
       debugMode: boolean;
       templatePath: string;
       outputDir: string;
       keepFileStructure: boolean;
       freshOutput: boolean;
-      helpers: { helperName: string; helperFunc: HelperFunction }[]
-    }
+      helpers: { helperName: string; helperFunc: HelperFunction }[];
+    };
   }
 }

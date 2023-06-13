@@ -29,11 +29,11 @@
                     "description": "result some details about the result"
                 }
             },
-            "@custom:warning": "the fallback function can return some data via assembly, but it will not be abi-encoded",
-            "@custom:hey": "hey hey hey",
-            "@custom:ho": "ho ho ho",
             "details": "This is a fallback",
-            "notice": "This is the notice of the fallback"
+            "notice": "This is the notice of the fallback",
+            "custom:warning": "the fallback function can return some data via assembly, but it will not be abi-encoded\n ",
+            "custom:hey": "hey hey hey\n ",
+            "custom:ho": "ho ho ho"
         },
         "baap(uint256,address)": {
             "stateMutability": "nonpayable",
@@ -103,9 +103,9 @@
             "code": "receive() external payable",
             "inputs": {},
             "outputs": {},
-            "@custom:info": "if sending native tokens with some graffiti, check the {`fallback()`} function documentation.",
             "details": "This is a `receive()` function",
-            "notice": "This is the notice of the `receive()` function"
+            "notice": "This is the notice of the `receive()` function",
+            "custom:info": "if sending native tokens with some graffiti, check the {`fallback()`} function documentation."
         }
     },
     "events": {

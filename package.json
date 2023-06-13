@@ -1,6 +1,6 @@
 {
   "name": "@b00ste/hardhat-dodoc",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Zero-config Hardhat plugin to generate documentation for all your Solidity contracts",
   "repository": "github:b00ste/hardhat-dodoc",
   "author": "Primitive",
