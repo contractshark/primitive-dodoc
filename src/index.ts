@@ -52,6 +52,56 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
     const buildInfo = await hre.artifacts.getBuildInfo(qualifiedName);
     const info = buildInfo?.output.contracts[source][name] as CompilerOutputContractWithDocumentation;
 
+    // Getting inheritance of the contract and combining the natspec
+    for (const inheritanceSource in buildInfo?.output.contracts) {
+      const fileContracts = buildInfo?.output.contracts[inheritanceSource];
+      for (const inheritanceContract in fileContracts) {
+        const contractBuildInfo = fileContracts[
+          inheritanceContract
+        ] as CompilerOutputContractWithDocumentation;
+        // Combining devdoc
+        const contractDevdoc = info.devdoc;
+        const parentContractDevdoc = contractBuildInfo.devdoc;
+        if (parentContractDevdoc !== undefined) {
+          if (contractDevdoc !== undefined) {
+            contractDevdoc.methods = {
+              ...contractDevdoc.methods,
+              ...parentContractDevdoc.methods,
+            };
+            contractDevdoc.events = {
+              ...contractDevdoc.events,
+              ...parentContractDevdoc.events,
+            };
+            contractDevdoc.errors = {
+              ...contractDevdoc.errors,
+              ...parentContractDevdoc.errors,
+            };
+          }
+          info.devdoc = contractDevdoc;
+        }
+        // Combining userdoc
+        const contractUserdoc = info.userdoc;
+        const parentContractUserdoc = contractBuildInfo.userdoc;
+        if (parentContractUserdoc !== undefined) {
+          if (contractUserdoc !== undefined) {
+            contractUserdoc.methods = {
+              ...contractUserdoc.methods,
+              ...parentContractUserdoc.methods,
+            };
+            contractUserdoc.events = {
+              ...contractUserdoc.events,
+              ...parentContractUserdoc.events,
+            };
+            contractUserdoc.errors = {
+              ...contractUserdoc.errors,
+              ...parentContractUserdoc.errors,
+            };
+          }
+          info.userdoc = contractUserdoc;
+        }
+      }
+    }
+
     if (config.debugMode) {
       console.log('ABI:\n');
       console.log(JSON.stringify(info.abi, null, 4));

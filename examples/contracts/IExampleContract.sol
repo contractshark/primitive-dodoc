@@ -43,5 +43,6 @@ interface IExampleContract {
   function anotherThing(uint256 num) external pure returns (uint256);
 
   /// @notice            Poorly documented function starting with weird spaces.
+  /// @dev Initital dev documentation
   function boop() external view returns (address);
 }
