@@ -148,7 +148,7 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
       if (doc.errors[errorName] !== undefined) doc.errors[errorName].details = error?.details;
 
       for (const param in error?.params) {
-        if (doc.errors[errorName].inputs[param]) {
+        if (doc.errors[errorName]?.inputs[param]) {
           doc.errors[errorName].inputs[param].description = error?.params[param];
         }
       }
@@ -157,7 +157,9 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
         if (value.startsWith('custom:')) {
           const strippedValue = value.substring(7);
           if (strippedValue.length > 0) {
-            doc.errors[errorName][`custom:${strippedValue}`] = error[`custom:${strippedValue}`];
+            if (doc.errors[errorName]) {
+              doc.errors[errorName][`custom:${strippedValue}`] = error[`custom:${strippedValue}`];
+            }
           }
         }
       }
@@ -170,7 +172,7 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
       if (doc.events[eventName] !== undefined) doc.events[eventName].details = event?.details;
 
       for (const param in event?.params) {
-        if (doc.events[eventName].inputs[param]) {
+        if (doc.events[eventName]?.inputs[param]) {
           doc.events[eventName].inputs[param].description = event?.params[param];
         }
       }
@@ -179,7 +181,9 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
         if (value.startsWith('custom:')) {
           const strippedValue = value.substring(7);
           if (strippedValue.length > 0) {
-            doc.events[eventName][`custom:${strippedValue}`] = event[`custom:${strippedValue}`];
+            if (doc.events[eventName]) {
+              doc.events[eventName][`custom:${strippedValue}`] = event[`custom:${strippedValue}`];
+            }
           }
         }
       }
@@ -399,7 +403,9 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
         if (value.startsWith('custom:')) {
           const strippedValue = value.substring(7);
           if (strippedValue.length > 0) {
-            doc.methods[methodSig][`custom:${strippedValue}`] = method[`custom:${strippedValue}`];
+            if (doc.methods[methodSig]) {
+              doc.methods[methodSig][`custom:${strippedValue}`] = method[`custom:${strippedValue}`];
+            }
           }
         }
       }
