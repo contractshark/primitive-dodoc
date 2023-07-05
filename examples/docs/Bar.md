@@ -170,16 +170,16 @@ event Transfer(uint256 foo)
 ```
 
 Emitted when transfer
+*Transfer some stuff*
 
-
-
+**Danger:** *This event exposes private info*
 
 
 #### Parameters
 
 | Name | Type | Description |
 |---|---|---|
-| foo  | uint256 | undefined |
+| foo  | uint256 | Amount of stuff |
 
 
 

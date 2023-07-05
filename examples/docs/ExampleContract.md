@@ -1,16 +1,59 @@
-# IExampleContract
+# ExampleContract
 
-*0xAn0n*
 
-> Interface of our ExampleContract
 
-Put a simple description of the contract here.
 
-*And then a more complicated and tech oriented description of the contract there.*
+
+
+
+
 
 
 
 ## Methods
+
+### fallback
+
+```solidity
+fallback(bytes calldata value) external nonpayable returns (bytes memory returnValue)
+```
+
+A notice for the fallback
+*A developer documentation comment for the fallback*
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| value | bytes | Some random value for the fallback |
+
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+| returnValue | bytes | A nice return value post-computation |
+
+### aNewFunc
+
+```solidity
+function aNewFunc(uint256 somth, bytes anoth) external nonpayable
+```
+
+New Func executed
+*Some dev information about New Func*
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| somth | uint256 | Something funny |
+| anoth | bytes | Another thing funny |
 
 ### anotherThing
 
@@ -43,7 +86,7 @@ function boop() external view returns (address)
 ```
 
 Poorly documented function starting with weird spaces.
-*New documentation, changing the interface*
+*Initital dev documentation*
 
 
 

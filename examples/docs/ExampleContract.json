@@ -1,5 +1,40 @@
 {
     "methods": {
+        "fallback()": {
+            "stateMutability": "nonpayable",
+            "code": "fallback(bytes calldata value) external nonpayable returns (bytes memory returnValue)",
+            "inputs": {
+                "value": {
+                    "type": "bytes",
+                    "description": "Some random value for the fallback"
+                }
+            },
+            "outputs": {
+                "returnValue": {
+                    "type": "bytes",
+                    "description": "A nice return value post-computation"
+                }
+            },
+            "notice": "A notice for the fallback",
+            "details": "A developer documentation comment for the fallback"
+        },
+        "aNewFunc(uint256,bytes)": {
+            "stateMutability": "nonpayable",
+            "code": "function aNewFunc(uint256 somth, bytes anoth) external nonpayable",
+            "inputs": {
+                "somth": {
+                    "type": "uint256",
+                    "description": "Something funny"
+                },
+                "anoth": {
+                    "type": "bytes",
+                    "description": "Another thing funny"
+                }
+            },
+            "outputs": {},
+            "notice": "New Func executed",
+            "details": "Some dev information about New Func"
+        },
         "anotherThing(uint256)": {
             "stateMutability": "pure",
             "code": "function anotherThing(uint256 num) external pure returns (uint256)",
@@ -28,7 +63,7 @@
                 }
             },
             "notice": "Poorly documented function starting with weird spaces.",
-            "details": "New documentation, changing the interface"
+            "details": "Initital dev documentation"
         },
         "doSomething(address,uint256)": {
             "stateMutability": "nonpayable",
@@ -101,9 +136,5 @@
         }
     },
     "path": "",
-    "title": "Interface of our ExampleContract",
-    "notice": "Put a simple description of the contract here.",
-    "details": "And then a more complicated and tech oriented description of the contract there.",
-    "author": "0xAn0n",
-    "name": "IExampleContract"
+    "name": "ExampleContract"
 }

@@ -114,10 +114,13 @@
             "inputs": {
                 "foo": {
                     "type": "uint256",
-                    "indexed": false
+                    "indexed": false,
+                    "description": "Amount of stuff"
                 }
             },
-            "notice": "Emitted when transfer"
+            "notice": "Emitted when transfer",
+            "details": "Transfer some stuff",
+            "custom:danger": "This event exposes private info"
         }
     },
     "errors": {

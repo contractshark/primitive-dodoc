@@ -8,7 +8,9 @@
                     "type": "uint256"
                 }
             },
-            "outputs": {}
+            "outputs": {},
+            "notice": "Cool function bro",
+            "custom:requirement": "Check first requirementCheck second requirement"
         },
         "set(tuple)": {
             "stateMutability": "nonpayable",
