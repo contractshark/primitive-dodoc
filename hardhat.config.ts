@@ -12,6 +12,7 @@ const config: HardhatUserConfig = {
     debugMode: true,
     outputDir: './examples/docs',
     exclude: ['examples/contracts/excluded/Nope.sol'],
+    libraries: ['examples/contracts/Foo.sol'],
     runOnCompile: true,
   },
 };

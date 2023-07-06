@@ -480,13 +480,12 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
             recursive: true,
           });
         } else {
-          const { name } = docs[i];
+          const relativeFilePath = filteredQualifiedNames[i].split(':')[0];
           let { outputDir } = config;
-          if (name !== undefined) {
-            outputDir = config.libraries.includes(name)
-              ? `${config.outputDir}/libraries`
-              : `${config.outputDir}/contracts`;
-          }
+
+          outputDir = config.libraries.includes(relativeFilePath)
+            ? `${config.outputDir}/libraries`
+            : `${config.outputDir}/contracts`;
 
           try {
             await fs.promises.access(outputDir);
@@ -508,13 +507,12 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
         encoding: 'utf-8',
       });
     } else {
-      const { name } = docs[i];
+      const relativeFilePath = filteredQualifiedNames[i].split(':')[0];
       let { outputDir } = config;
-      if (name !== undefined) {
-        outputDir = config.libraries.includes(name)
-          ? `${config.outputDir}/libraries`
-          : `${config.outputDir}/contracts`;
-      }
+
+      outputDir = config.libraries.includes(relativeFilePath)
+        ? `${config.outputDir}/libraries`
+        : `${config.outputDir}/contracts`;
 
       try {
         await fs.promises.access(outputDir);
@@ -537,13 +535,12 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
           },
         );
       } else {
-        const { name } = docs[i];
+        const relativeFilePath = filteredQualifiedNames[i].split(':')[0];
         let { outputDir } = config;
-        if (name !== undefined) {
-          outputDir = config.libraries.includes(name)
-            ? `${config.outputDir}/libraries`
-            : `${config.outputDir}/contracts`;
-        }
+
+        outputDir = config.libraries.includes(relativeFilePath)
+          ? `${config.outputDir}/libraries`
+          : `${config.outputDir}/contracts`;
 
         try {
           await fs.promises.access(outputDir);
