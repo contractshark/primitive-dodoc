@@ -34,12 +34,8 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
   const filteredQualifiedNames = qualifiedNames.filter((filePath: string) => {
     const relativeFilePath = filePath.split(':')[0];
     // Checks if the documentation has to be generated for this contract
-    const includesPath = config.include.some(
-      (str) => relativeFilePath.substring(relativeFilePath.lastIndexOf('/') + 1) === str,
-    );
-    const excludesPath = config.exclude.some(
-      (str) => relativeFilePath.substring(relativeFilePath.lastIndexOf('/') + 1) === str,
-    );
+    const includesPath = config.include.some((str) => relativeFilePath === str);
+    const excludesPath = config.exclude.some((str) => relativeFilePath === str);
     return (config.include.length === 0 || includesPath) && !excludesPath;
   });
 

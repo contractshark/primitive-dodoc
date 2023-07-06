@@ -11,7 +11,7 @@ const config: HardhatUserConfig = {
   dodoc: {
     debugMode: true,
     outputDir: './examples/docs',
-    exclude: ['Nope.sol'],
+    exclude: ['examples/contracts/excluded/Nope.sol'],
     runOnCompile: true,
   },
 };
