@@ -119,8 +119,7 @@
                 }
             },
             "notice": "Emitted when transfer",
-            "details": "Transfer some stuff",
-            "custom:danger": "This event exposes private info"
+            "details": "Transfer some stuff"
         }
     },
     "errors": {
