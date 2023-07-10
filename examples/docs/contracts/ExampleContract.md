@@ -86,7 +86,7 @@ function boop() external view returns (address)
 ```
 
 Poorly documented function starting with weird spaces.
-*Initital dev documentation*
+*New documentation, changing the interface*
 
 
 

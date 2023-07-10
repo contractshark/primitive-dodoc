@@ -28,7 +28,7 @@
                 }
             },
             "notice": "Poorly documented function starting with weird spaces.",
-            "details": "New documentation, changing the interface"
+            "details": "Initital dev documentation"
         },
         "doSomething(address,uint256)": {
             "stateMutability": "nonpayable",

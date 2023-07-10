@@ -32,7 +32,7 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
 
   const qualifiedNames = await hre.artifacts.getAllFullyQualifiedNames();
   const filteredQualifiedNames = qualifiedNames.filter((filePath: string) => {
-    const [relativeFilePath, contractName] = filePath.split(':')[0];
+    const [relativeFilePath, contractName] = filePath.split(':');
     // Checks if the documentation has to be generated for this contract
     const includesPath = config.include.some((str) => relativeFilePath === str || contractName === str);
     const excludesPath = config.exclude.some((str) => relativeFilePath === str || contractName === str);
@@ -60,40 +60,12 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
         const parentContractDevdoc = contractBuildInfo.devdoc;
         if (parentContractDevdoc !== undefined) {
           if (contractDevdoc !== undefined) {
-            contractDevdoc.methods = {
-              ...contractDevdoc.methods,
-              ...parentContractDevdoc.methods,
-            };
             contractDevdoc.events = {
               ...contractDevdoc.events,
               ...parentContractDevdoc.events,
             };
-            contractDevdoc.errors = {
-              ...contractDevdoc.errors,
-              ...parentContractDevdoc.errors,
-            };
           }
           info.devdoc = contractDevdoc;
-        }
-        // Combining userdoc
-        const contractUserdoc = info.userdoc;
-        const parentContractUserdoc = contractBuildInfo.userdoc;
-        if (parentContractUserdoc !== undefined) {
-          if (contractUserdoc !== undefined) {
-            contractUserdoc.methods = {
-              ...contractUserdoc.methods,
-              ...parentContractUserdoc.methods,
-            };
-            contractUserdoc.events = {
-              ...contractUserdoc.events,
-              ...parentContractUserdoc.events,
-            };
-            contractUserdoc.errors = {
-              ...contractUserdoc.errors,
-              ...parentContractUserdoc.errors,
-            };
-          }
-          info.userdoc = contractUserdoc;
         }
       }
     }
