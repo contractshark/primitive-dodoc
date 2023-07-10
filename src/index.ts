@@ -48,6 +48,28 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
     const buildInfo = await hre.artifacts.getBuildInfo(qualifiedName);
     const info = buildInfo?.output.contracts[source][name] as CompilerOutputContractWithDocumentation;
 
+    // Getting inheritance of the contract and combining the natspec
+    for (const inheritanceSource in buildInfo?.output.contracts) {
+      const fileContracts = buildInfo?.output.contracts[inheritanceSource];
+      for (const inheritanceContract in fileContracts) {
+        const contractBuildInfo = fileContracts[
+          inheritanceContract
+        ] as CompilerOutputContractWithDocumentation;
+        // Combining devdoc
+        const contractDevdoc = info.devdoc;
+        const parentContractDevdoc = contractBuildInfo.devdoc;
+        if (parentContractDevdoc !== undefined) {
+          if (contractDevdoc !== undefined) {
+            contractDevdoc.events = {
+              ...contractDevdoc.events,
+              ...parentContractDevdoc.events,
+            };
+          }
+          info.devdoc = contractDevdoc;
+        }
+      }
+    }
+
     if (config.debugMode) {
       console.log('ABI:\n');
       console.log(JSON.stringify(info.abi, null, 4));
@@ -394,50 +416,6 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
         }
       }
     }
-
-    // console.log(doc.events);
-    // Getting inheritance of the contract and combining the natspec
-    for (const inheritanceSource in buildInfo?.output.contracts) {
-      const fileContracts = buildInfo?.output.contracts[inheritanceSource];
-      for (const inheritanceContract in fileContracts) {
-        const contractBuildInfo = fileContracts[
-          inheritanceContract
-        ] as CompilerOutputContractWithDocumentation;
-        // Combining devdoc
-        const parentContractDevdocEvents = contractBuildInfo.devdoc?.events;
-        if (parentContractDevdocEvents) {
-          if (doc) {
-            if (doc.events) {
-              for (const event in doc.events) {
-                let eventSignatrue = `${event}(`;
-                if (doc.events[event].inputs) {
-                  for (const input in doc.events[event].inputs) {
-                    eventSignatrue += `${doc.events[event].inputs[input].type},`;
-                  }
-                  eventSignatrue = eventSignatrue.substring(0, eventSignatrue.length - 1);
-                }
-                eventSignatrue += ')';
-
-                if (doc.events[event] && parentContractDevdocEvents[eventSignatrue]) {
-                  if (doc.events[event].details === undefined) {
-                    if (parentContractDevdocEvents[eventSignatrue].details) {
-                      doc.events[event].details = parentContractDevdocEvents[eventSignatrue].details;
-                    }
-                    if (parentContractDevdocEvents[eventSignatrue].params) {
-                      for (const param in parentContractDevdocEvents[eventSignatrue].params) {
-                        doc.events[event].inputs[param].description =
-                          parentContractDevdocEvents[eventSignatrue].params[param];
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    // console.log(doc.events);
 
     doc.name = name;
     docs.push(doc);
