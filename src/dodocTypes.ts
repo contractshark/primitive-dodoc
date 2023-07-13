@@ -154,4 +154,7 @@ export interface Doc {
   errors: {
     [key: string]: Error;
   };
+  internalMethods: {
+    [key: string]: Method;
+  };
 }

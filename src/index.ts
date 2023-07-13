@@ -71,14 +71,14 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
     }
 
     if (config.debugMode) {
-      console.log('ABI:\n');
-      console.log(JSON.stringify(info.abi, null, 4));
-      console.log('\n\n');
-      console.log('User doc:\n');
-      console.log(JSON.stringify(info.userdoc, null, 4));
-      console.log('\n\n');
-      console.log('Dev doc:\n');
-      console.log(JSON.stringify(info.devdoc, null, 4));
+      // console.log('ABI:\n');
+      // console.log(JSON.stringify(info.abi, null, 4));
+      // console.log('\n\n');
+      // console.log('User doc:\n');
+      // console.log(JSON.stringify(info.userdoc, null, 4));
+      // console.log('\n\n');
+      // console.log('Dev doc:\n');
+      // console.log(JSON.stringify(info.devdoc, null, 4));
     }
 
     const doc: Doc = {
@@ -158,11 +158,18 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
     }
 
     /**
-     * @dev this function is intended to be used only to parse the `receive` and `fallback` function so far.
-     * Caution if using this function to parse the Natspec of other methods from the AST
+     * @dev Parse Natspec user and devdocs and write them into the `doc` object.
+     * This function is used in this Hardhat plugin only to parse:
+     * - the `receive` function.
+     * - the `fallback` function.
+     * - functions marked with the `internal` visibility.
+     *
+     * Caution if using this function to parse the Natspec of other part of the contract AST (e.g: struct, enum, modifier, etc...)
      */
-    const parseNatspecFromAST = (functionName: 'receive' | 'fallback', functionASTNode: any) => {
+    const parseNatspecFromAST = (functionSig: string, functionASTNode: any) => {
       const tags = functionASTNode.documentation.text.split('@');
+
+      const docEntry = doc.methods[functionSig] || doc.internalMethods[functionSig];
 
       tags.forEach((natspecTag: any) => {
         if (natspecTag.replace(' ', '').length === 0) {
@@ -170,20 +177,17 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
         }
 
         if (natspecTag.startsWith('dev ')) {
-          doc.methods[`${functionName}()`].details = natspecTag.replace('dev ', '').trim();
+          docEntry.details = natspecTag.replace('dev ', '').trim();
         }
 
         if (natspecTag.startsWith('notice ')) {
-          doc.methods[`${functionName}()`].notice = natspecTag.replace('notice ', '').trim();
+          docEntry.notice = natspecTag.replace('notice ', '').trim();
         }
 
         // add custom any `@custom:` tags
         if (natspecTag.startsWith('custom:')) {
           const customTagName = natspecTag.substring('custom:'.length, natspecTag.trim().indexOf(' '));
-          doc.methods[`${functionName}()`][`custom:${customTagName}`] = natspecTag.replace(
-            `custom:${customTagName} `,
-            '',
-          );
+          docEntry[`custom:${customTagName}`] = natspecTag.replace(`custom:${customTagName} `, '');
         }
       });
     };
@@ -211,51 +215,42 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
       doc.methods['fallback()'].code = newFallbackCode;
     };
 
-    const parseParamsAndReturnNatspecsForFallback = (fallbackASTNode: any) => {
-      const paramDoc = fallbackASTNode.documentation.text
+    const parseParamsAndReturnNatspecFromAST = (
+      astNode: any,
+      functionName: string,
+      docEntry: 'methods' | 'internalMethods' | 'events' | 'errors',
+    ) => {
+      const paramDoc = astNode.documentation.text
         .match(/@.*/g)
         .filter((text: string) => text.match(/@param.*/));
 
       if (paramDoc.length !== 0) {
-        const paramName = fallbackASTNode.parameters.parameters[0].name;
-        doc.methods['fallback()'].inputs[paramName] = {
-          type: 'bytes',
-          description: paramDoc[0].replace(`@param ${paramName} `, ''),
-        };
+        astNode.parameters.parameters.forEach((param: any, index: number) => {
+          const paramName = param.name;
+          const paramType = param.typeName.name;
+
+          doc[docEntry][functionName].inputs[paramName] = {
+            type: paramType,
+            description: paramDoc[index].replace(`@param ${paramName} `, ''),
+          };
+        });
       }
 
-      const returnDoc = fallbackASTNode.documentation.text
+      const returnDoc = astNode.documentation.text
         .match(/@.*/g)
         .filter((text: string) => text.match(/@return.*/));
 
-      if (returnDoc.length !== 0) {
-        const returnVariableName =
-          fallbackASTNode.returnParameters.parameters[0].name === ''
-            ? ''
-            : fallbackASTNode.returnParameters.parameters[0].name;
+      // custom errors and events do not have return parameters
+      if (returnDoc.length !== 0 && docEntry !== 'errors' && docEntry !== 'events') {
+        astNode.returnParameters.parameters.forEach((returnParam: any, index: number) => {
+          const returnVariableName = returnParam.name === '' ? `_${index}` : returnParam.name;
+          const returnParamType = returnParam.typeName.name;
 
-        doc.methods['fallback()'].outputs[returnVariableName] = {
-          type: 'bytes',
-          description: returnDoc[0].replace(`@return ${returnVariableName} `, ''),
-        };
-      }
-    };
-
-    const parseNatspecFromFallback = (fallbackASTNode: any) => {
-      parseNatspecFromAST('fallback', fallbackASTNode);
-
-      // parse any @param or @return tags if fallback function is written as
-      // `fallback(bytes calldata fallbackParam) external <payable> returns (bytes memory)`
-      //
-      // Note: we should ideally have only a single `@param` or `@return` tag in this case
-      parseParamsAndReturnNatspecsForFallback(fallbackASTNode);
-
-      // modify the code if the fallback is written as `fallback(bytes calldata fallbackParam) external <payable> returns (bytes memory)`
-      if (
-        fallbackASTNode.parameters.parameters.length === 1 &&
-        fallbackASTNode.returnParameters.parameters.length === 1
-      ) {
-        modifyFallbackFunctionSyntax(fallbackASTNode);
+          doc[docEntry][functionName].outputs[returnVariableName] = {
+            type: returnParamType,
+            description: returnDoc[index].replace(`@return ${returnVariableName} `, ''),
+          };
+        });
       }
     };
 
@@ -263,14 +258,14 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
     // Need to be fetched manually from AST
     const AST = buildInfo?.output.sources[source].ast.nodes;
 
-    // find all AST nodes that are `contract`
+    // find the first AST node that is `contract`
     const contractNode = AST.filter((node: any) => node.contractKind === 'contract')[0];
 
     if (doc.methods['receive()'] !== undefined) {
       const receiveASTNode = contractNode.nodes.find((node: any) => node.kind === 'receive');
 
       if (receiveASTNode !== undefined && receiveASTNode.hasOwnProperty('documentation')) {
-        parseNatspecFromAST('receive', receiveASTNode);
+        parseNatspecFromAST('receive()', receiveASTNode);
       } else {
         // search in the parent contracts
         // eslint-disable-next-line no-lonely-if
@@ -293,7 +288,7 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
                   receiveParentASTNode !== undefined &&
                   receiveParentASTNode.hasOwnProperty('documentation')
                 ) {
-                  parseNatspecFromAST('receive', receiveParentASTNode);
+                  parseNatspecFromAST('receive()', receiveParentASTNode);
                   // stop searching as soon as we find the most overriden function in the most derived contract
                   break;
                 }
@@ -306,10 +301,28 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
 
     if (doc.methods['fallback()'] !== undefined) {
       // look for the `fallback()` function
-      const fallbackASTNode = contractNode.nodes.find((node: any) => node.kind === 'fallback');
+      const derivedFallbackASTNode = contractNode.nodes.find((node: any) => node.kind === 'fallback');
 
-      if (fallbackASTNode !== undefined && fallbackASTNode.hasOwnProperty('documentation')) {
-        parseNatspecFromFallback(fallbackASTNode);
+      const parseNatspecFromFallback = (fallbackASTNode: any) => {
+        parseNatspecFromAST('fallback()', fallbackASTNode);
+
+        // parse any @param or @return tags if fallback function is written as
+        // `fallback(bytes calldata fallbackParam) external <payable> returns (bytes memory)`
+        //
+        // Note: we should ideally have only a single `@param` or `@return` tag in this case
+        parseParamsAndReturnNatspecFromAST(fallbackASTNode, 'fallback()', 'methods');
+
+        // modify the code if the fallback is written as `fallback(bytes calldata fallbackParam) external <payable> returns (bytes memory)`
+        if (
+          fallbackASTNode.parameters.parameters.length === 1 &&
+          fallbackASTNode.returnParameters.parameters.length === 1
+        ) {
+          modifyFallbackFunctionSyntax(fallbackASTNode);
+        }
+      };
+
+      if (derivedFallbackASTNode !== undefined && derivedFallbackASTNode.hasOwnProperty('documentation')) {
+        parseNatspecFromFallback(derivedFallbackASTNode);
       } else {
         // search in the parent contracts
         // eslint-disable-next-line no-lonely-if, no-prototype-builtins
@@ -324,15 +337,15 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
                 inheritedContractAST.length > 0 &&
                 baseContract.baseName.referencedDeclaration === inheritedContractAST[0].id
               ) {
-                const fallbackParentASTNode = inheritedContractAST[0].nodes.find(
+                const parentFallbackASTNode = inheritedContractAST[0].nodes.find(
                   (node: any) => node.kind === 'fallback',
                 );
 
                 if (
-                  fallbackParentASTNode !== undefined &&
-                  fallbackParentASTNode.hasOwnProperty('documentation')
+                  parentFallbackASTNode !== undefined &&
+                  parentFallbackASTNode.hasOwnProperty('documentation')
                 ) {
-                  parseNatspecFromFallback(fallbackParentASTNode);
+                  parseNatspecFromFallback(parentFallbackASTNode);
 
                   // stop searching as soon as we find the most overriden function in the most derived contract
                   break;
@@ -343,6 +356,102 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
         }
       }
     }
+
+    const parseNatspecOfInternalFunctionsFromAST = async (contract: any) => {
+      // Get Natspec of internal functions from AST
+      const internalFunctionsNodes = contract.nodes.filter(
+        (node: any) =>
+          node.kind === 'function' &&
+          node.nodeType === 'FunctionDefinition' &&
+          node.visibility === 'internal',
+      );
+
+      if (internalFunctionsNodes.length > 0) {
+        // create entries for internal functions in doc.internalMethods
+        internalFunctionsNodes.forEach((internalFunctionNode: any) => {
+          const {
+            name: functionName,
+            stateMutability,
+            parameters: { parameters: params } = { parameters: [] },
+            returnParameters: { parameters: returnParams } = { parameters: [] },
+          } = internalFunctionNode;
+
+          // this is non-standard, but our best attempt to create unique property name for each internal functions in the object
+          // there are no concept of function signatures and selector for internal functions
+          // (internal functions are not callable from outside the contract, and are of type 'function type)
+          // but we are using this way to store the natspec for each internal functions and differentiate them uniquely.
+          const internalFunctionSig = `${functionName}(${params
+            .map((param: any) => param.typeName.name)
+            .join(',')})`;
+
+          let internalFunctionCode = `function ${functionName}(${params
+            .map((param: any) => `${param.typeName.name} ${param.name}`)
+            .join(',')}) internal`;
+
+          internalFunctionCode += ` ${stateMutability}`;
+
+          if (returnParams.length > 0) {
+            internalFunctionCode += ` returns (${returnParams
+              .map((returnParam: any) => `${returnParam.typeName.name} ${returnParam.name}`)
+              .join(',')})`;
+          }
+
+          internalFunctionCode += ';';
+
+          if (!doc.internalMethods) {
+            doc.internalMethods = {};
+          }
+
+          doc.internalMethods[internalFunctionSig] = {
+            code: internalFunctionCode,
+            inputs: {},
+            outputs: {},
+          };
+
+          parseNatspecFromAST(internalFunctionSig, internalFunctionNode);
+          parseParamsAndReturnNatspecFromAST(internalFunctionNode, internalFunctionSig, 'internalMethods');
+        });
+      }
+    };
+
+    const libraryNodes = AST.filter((node: any) => node.contractKind === 'library');
+
+    // library do not have inheritance, so we can parse the Natspec directly
+    libraryNodes.forEach((library: any) => {
+      parseNatspecOfInternalFunctionsFromAST(library);
+    });
+
+    // contract have inheritance, so we need to search for all the internal functions
+    // through the linearized inheritance graph,
+    // from the most base (parent) to the most derived (child) contract
+    const contractsNode = AST.filter((node: any) => node.contractKind === 'contract');
+
+    contractsNode.forEach((contract: any) => {
+      const { linearizedBaseContracts } = contract;
+
+      if (linearizedBaseContracts.length > 1) {
+        let ii = linearizedBaseContracts.length - 1;
+
+        while (ii >= 0) {
+          const contractId = linearizedBaseContracts[ii];
+
+          for (const sourceFile in buildInfo?.output.sources) {
+            const matchingASTNode = buildInfo?.output.sources[sourceFile].ast.nodes.find(
+              (node: any) => node.contractKind === 'contract' && node.id === contractId,
+            );
+
+            if (matchingASTNode !== undefined) {
+              parseNatspecOfInternalFunctionsFromAST(matchingASTNode);
+            }
+          }
+
+          ii--;
+        }
+      } else {
+        // parse directly if the contract does not inherit any other contract
+        parseNatspecOfInternalFunctionsFromAST(contract);
+      }
+    });
 
     for (const methodSig in info.devdoc?.methods) {
       const method = info.devdoc?.methods[methodSig];
