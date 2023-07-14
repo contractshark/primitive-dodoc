@@ -71,14 +71,14 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
     }
 
     if (config.debugMode) {
-      // console.log('ABI:\n');
-      // console.log(JSON.stringify(info.abi, null, 4));
-      // console.log('\n\n');
-      // console.log('User doc:\n');
-      // console.log(JSON.stringify(info.userdoc, null, 4));
-      // console.log('\n\n');
-      // console.log('Dev doc:\n');
-      // console.log(JSON.stringify(info.devdoc, null, 4));
+      console.log('ABI:\n');
+      console.log(JSON.stringify(info.abi, null, 4));
+      console.log('\n\n');
+      console.log('User doc:\n');
+      console.log(JSON.stringify(info.userdoc, null, 4));
+      console.log('\n\n');
+      console.log('Dev doc:\n');
+      console.log(JSON.stringify(info.devdoc, null, 4));
     }
 
     const doc: Doc = {
@@ -235,7 +235,7 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
           if (paramDoc[index] === undefined) return;
 
           const paramName = param.name;
-          const paramType = param.typeName.name;
+          const paramType = param.typeDescriptions.typeString;
 
           doc[docEntry][functionName].inputs[paramName] = {
             type: paramType,
@@ -253,10 +253,10 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
         astNode.returnParameters.parameters.forEach((returnParam: any, index: number) => {
           // Check if there is not the same number of Natspec @return tags compared
           // to the number of return params for the function in the AST node.
-          if (returnParam[index] === undefined) return;
+          if (returnDoc[index] === undefined) return;
 
           const returnVariableName = returnParam.name === '' ? `_${index}` : returnParam.name;
-          const returnParamType = returnParam.typeName.name;
+          const returnParamType = returnParam.typeDescriptions.typeString;
 
           doc[docEntry][functionName].outputs[returnVariableName] = {
             type: returnParamType,
@@ -393,22 +393,28 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
           // (internal functions are not callable from outside the contract, and are of type 'function type)
           // but we are using this way to store the natspec for each internal functions and differentiate them uniquely.
           const internalFunctionSig = `${functionName}(${params
-            .map((param: any) => param.typeName.name)
+            .map((param: any) => param.typeDescriptions.typeString)
             .join(',')})`;
 
           let internalFunctionCode = `function ${functionName}(${params
-            .map((param: any) => `${param.typeName.name} ${param.name}`)
-            .join(',')}) internal`;
+            .map((param: any) => `${param.typeDescriptions.typeString} ${param.name}`)
+            .join(', ')}) internal`;
 
           internalFunctionCode += ` ${stateMutability}`;
 
           if (returnParams.length > 0) {
             internalFunctionCode += ` returns (${returnParams
-              .map((returnParam: any) => `${returnParam.typeName.name} ${returnParam.name}`)
-              .join(',')})`;
-          }
+              .map((returnParam: any) => {
+                let returnStatement = `${returnParam.typeDescriptions.typeString}`;
 
-          internalFunctionCode += ';';
+                if (returnParam.name !== '') {
+                  returnStatement += ` ${returnParam.name}`;
+                }
+
+                return returnStatement;
+              })
+              .join(', ')})`;
+          }
 
           if (!doc.internalMethods) {
             doc.internalMethods = {};
