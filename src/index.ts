@@ -167,6 +167,8 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
      * Caution if using this function to parse the Natspec of other part of the contract AST (e.g: struct, enum, modifier, etc...)
      */
     const parseNatspecFromAST = (functionSig: string, functionASTNode: any) => {
+      if ('documentation' in functionASTNode === false) return;
+
       const tags = functionASTNode.documentation.text.split('@');
 
       const docEntry = doc.methods[functionSig] || doc.internalMethods[functionSig];
@@ -220,12 +222,18 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
       functionName: string,
       docEntry: 'methods' | 'internalMethods' | 'events' | 'errors',
     ) => {
+      if ('documentation' in astNode === false) return;
+
       const paramDoc = astNode.documentation.text
         .match(/@.*/g)
         .filter((text: string) => text.match(/@param.*/));
 
-      if (paramDoc.length !== 0) {
+      if (paramDoc.length > 0) {
         astNode.parameters.parameters.forEach((param: any, index: number) => {
+          // Check if there is not the same number of Natspec @param tags compared
+          // to the number of params for the function in the AST node.
+          if (paramDoc[index] === undefined) return;
+
           const paramName = param.name;
           const paramType = param.typeName.name;
 
@@ -241,8 +249,12 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
         .filter((text: string) => text.match(/@return.*/));
 
       // custom errors and events do not have return parameters
-      if (returnDoc.length !== 0 && docEntry !== 'errors' && docEntry !== 'events') {
+      if (returnDoc.length > 0 && docEntry !== 'errors' && docEntry !== 'events') {
         astNode.returnParameters.parameters.forEach((returnParam: any, index: number) => {
+          // Check if there is not the same number of Natspec @return tags compared
+          // to the number of return params for the function in the AST node.
+          if (returnParam[index] === undefined) return;
+
           const returnVariableName = returnParam.name === '' ? `_${index}` : returnParam.name;
           const returnParamType = returnParam.typeName.name;
 
