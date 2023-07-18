@@ -161,6 +161,29 @@ This is the notice of the `receive()` function
 
 
 
+## Internal Methods
+
+### _baap
+
+```solidity
+function _baap(uint256 bar, address aar) internal nonpayable
+```
+
+Baaps the yaps internally
+
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| bar | uint256 | Number of bar |
+| aar | address | Address of aar |
+
+
+
 ## Events
 
 ### Transfer

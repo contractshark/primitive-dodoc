@@ -1,0 +1,164 @@
+{
+    "methods": {
+        "constructor": {
+            "stateMutability": "nonpayable",
+            "code": "constructor(uint256 someNumber)",
+            "inputs": {
+                "someNumber": {
+                    "type": "uint256",
+                    "description": "The description of the parameter"
+                }
+            },
+            "outputs": {},
+            "notice": "This is the notice of the constructor",
+            "details": "This is a constructor",
+            "custom:tip": "A custom blah tag"
+        },
+        "fallback()": {
+            "stateMutability": "nonpayable",
+            "code": "fallback(bytes calldata fallbackParam) external nonpayable returns (bytes memory testtest)",
+            "inputs": {
+                "fallbackParam": {
+                    "type": "bytes",
+                    "description": "some details about the param"
+                }
+            },
+            "outputs": {
+                "testtest": {
+                    "type": "bytes",
+                    "description": "result some details about the result"
+                }
+            },
+            "details": "This is a fallback",
+            "notice": "This is the notice of the fallback",
+            "custom:warning": "the fallback function can return some data via assembly, but it will not be abi-encoded\n ",
+            "custom:hey": "hey hey hey\n ",
+            "custom:ho": "ho ho ho"
+        },
+        "baap(uint256,address)": {
+            "stateMutability": "nonpayable",
+            "code": "function baap(uint256 bar, address aar) external nonpayable",
+            "inputs": {
+                "bar": {
+                    "type": "uint256",
+                    "description": "Number of bar"
+                },
+                "aar": {
+                    "type": "address",
+                    "description": "Address of aar"
+                }
+            },
+            "outputs": {},
+            "notice": "Baaps the yaps"
+        },
+        "boop(uint256)": {
+            "stateMutability": "nonpayable",
+            "code": "function boop(uint256 bar) external nonpayable",
+            "inputs": {
+                "bar": {
+                    "type": "uint256"
+                }
+            },
+            "outputs": {},
+            "notice": "Cool function bro",
+            "custom:requirement": "Check first requirementCheck second requirement"
+        },
+        "boop(uint256,uint256)": {
+            "stateMutability": "nonpayable",
+            "code": "function boop(uint256 bar, uint256 bar2) external nonpayable",
+            "inputs": {
+                "bar": {
+                    "type": "uint256"
+                },
+                "bar2": {
+                    "type": "uint256"
+                }
+            },
+            "outputs": {},
+            "notice": "Alt cool function bro"
+        },
+        "hello(bytes)": {
+            "stateMutability": "nonpayable",
+            "code": "function hello(bytes someCallData) external nonpayable",
+            "inputs": {
+                "someCallData": {
+                    "type": "bytes",
+                    "description": "hello tic tac toe"
+                }
+            },
+            "outputs": {}
+        },
+        "set(tuple)": {
+            "stateMutability": "nonpayable",
+            "code": "function set(IBar.T t) external nonpayable",
+            "inputs": {
+                "t": {
+                    "type": "IBar.T"
+                }
+            },
+            "outputs": {}
+        },
+        "receive()": {
+            "stateMutability": "payable",
+            "code": "receive() external payable",
+            "inputs": {},
+            "outputs": {},
+            "details": "This is a `receive()` function",
+            "notice": "This is the notice of the `receive()` function",
+            "custom:info": "if sending native tokens with some graffiti, check the {`fallback()`} function documentation."
+        }
+    },
+    "events": {
+        "Transfer": {
+            "code": "event Transfer(uint256 foo)",
+            "inputs": {
+                "foo": {
+                    "type": "uint256",
+                    "indexed": false,
+                    "description": "Amount of stuff"
+                }
+            },
+            "notice": "Emitted when transfer",
+            "details": "Transfer some stuff",
+            "custom:danger": "This event exposes private info"
+        }
+    },
+    "errors": {
+        "Doh": {
+            "code": "error Doh(bool yay)",
+            "inputs": {
+                "yay": {
+                    "type": "bool",
+                    "description": "A bool"
+                }
+            },
+            "notice": "Thrown when doh",
+            "details": "Bad doh error",
+            "custom:info": "Additional info"
+        }
+    },
+    "internalMethods": {
+        "_baap(uint256,address)": {
+            "code": "function _baap(uint256 bar, address aar) internal nonpayable",
+            "inputs": {
+                "bar": {
+                    "type": "uint256",
+                    "description": "Number of bar"
+                },
+                "aar": {
+                    "type": "address",
+                    "description": "Address of aar"
+                }
+            },
+            "outputs": {},
+            "notice": "Baaps the yaps internally"
+        }
+    },
+    "path": "",
+    "title": "Bar contract",
+    "notice": "Manages the bar",
+    "details": "Blablou",
+    "author": "Primitive",
+    "custom:version": "v2.0.1",
+    "name": "Bar"
+}
