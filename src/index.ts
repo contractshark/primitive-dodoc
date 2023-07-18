@@ -579,12 +579,14 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
             recursive: true,
           });
         } else {
-          const relativeFilePath = filteredQualifiedNames[i].split(':')[0];
+          const [relativeFilePath, contractName] = filteredQualifiedNames[i].split(':');
           let { outputDir } = config;
 
-          outputDir = config.libraries.includes(relativeFilePath)
-            ? `${config.outputDir}/libraries`
-            : `${config.outputDir}/contracts`;
+          if (config.libraries.includes(relativeFilePath) || config.libraries.includes(contractName)) {
+            outputDir = `${config.outputDir}/libraries`;
+          } else {
+            outputDir = `${config.outputDir}/contracts`;
+          }
 
           try {
             await fs.promises.access(outputDir);
@@ -606,12 +608,14 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
         encoding: 'utf-8',
       });
     } else {
-      const relativeFilePath = filteredQualifiedNames[i].split(':')[0];
+      const [relativeFilePath, contractName] = filteredQualifiedNames[i].split(':');
       let { outputDir } = config;
 
-      outputDir = config.libraries.includes(relativeFilePath)
-        ? `${config.outputDir}/libraries`
-        : `${config.outputDir}/contracts`;
+      if (config.libraries.includes(relativeFilePath) || config.libraries.includes(contractName)) {
+        outputDir = `${config.outputDir}/libraries`;
+      } else {
+        outputDir = `${config.outputDir}/contracts`;
+      }
 
       try {
         await fs.promises.access(outputDir);
@@ -634,12 +638,14 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
           },
         );
       } else {
-        const relativeFilePath = filteredQualifiedNames[i].split(':')[0];
+        const [relativeFilePath, contractName] = filteredQualifiedNames[i].split(':');
         let { outputDir } = config;
 
-        outputDir = config.libraries.includes(relativeFilePath)
-          ? `${config.outputDir}/libraries`
-          : `${config.outputDir}/contracts`;
+        if (config.libraries.includes(relativeFilePath) || config.libraries.includes(contractName)) {
+          outputDir = `${config.outputDir}/libraries`;
+        } else {
+          outputDir = `${config.outputDir}/contracts`;
+        }
 
         try {
           await fs.promises.access(outputDir);
