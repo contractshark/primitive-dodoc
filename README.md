@@ -124,7 +124,7 @@ Here are all the configuration parameters that are currently available, but as s
 | `runOnCompile`      | True if the plugin should generate the documentation on every compilation                                                                                                                                    | `true`            |
 | `include`           | List of all the contract / interface / library relative paths or names to include in the documentation generation. An empty array will generate documentation for everything                                 | `[]`              |
 | `exclude`           | List of all the contract / interface / library relative paths or names to exclude from the documentation generation                                                                                          | `[]`              |
-| `libraries`         | Used to separate the generated docs into two folders: 1. _contracts_ & 2. _libraries_. Add the relative path of the library to the array if you want to separate it to the libraries folder.                 | `[]`              |
+| `libraries`         | Used to separate the generated docs into two folders: 1. _contracts_ & 2. _libraries_. Add the relative paths or name of the library to the array if you want to separate it to the libraries folder.        | `[]`              |
 | `outputDir`         | Output directory of the documentation                                                                                                                                                                        | `docs`            |
 | `templatePath`      | Path to the documentation template                                                                                                                                                                           | `./template.sqrl` |
 | `debugMode`         | Test mode generating additional JSON files used for debugging                                                                                                                                                | `false`           |
@@ -144,6 +144,6 @@ Once you're satisfied, simply refer to your template using the `templatePath` pa
 
 Feel free to open an issue if you need help or if you encounter a problem! Here are some already known problems though:
 
-- Due to the technical limitations of the Solidity compiler, the documentation of `private` and `internal` functions is not rendered. Hence, the documentation of libraries might be close to empty!
+- Due to the technical limitations of the Solidity compiler, the documentation of `private` functions is not rendered.
 - Functions that are not commented at all might not be rendered.
 - State variables overriding functions defined by an interface might "erase" the name of the parameters. A current workaround is to name the function parameters using the `_0`, `_1`, ... format.
