@@ -61,6 +61,7 @@ export function decodeAbi(abi: AbiElement[]): Doc {
     methods: {},
     events: {},
     errors: {},
+    internalMethods: {},
   };
 
   for (let i = 0; i < abi.length; i += 1) {

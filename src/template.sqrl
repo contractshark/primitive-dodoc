@@ -63,6 +63,53 @@
 
 {{/if}}
 
+{{@if (Object.keys(it.internalMethods).length > 0)}}
+## Internal Methods
+
+{{@foreach(it.internalMethods) => key, val}}
+### {{key.split('(')[0]}}
+
+
+```solidity
+{{val.code}}
+
+```
+
+{{@if (val.notice)}}{{val.notice}}{{/if}}
+
+{{@if (val.details)}}*{{val.details}}*{{/if}}
+
+{{@if (val['custom:requirement'])}}**Requirement:** *{{val['custom:requirement']}}*{{/if}}
+
+{{@if (val['custom:danger'])}}**Danger:** *{{val['custom:danger']}}*{{/if}}
+
+{{@if (val['custom:info'])}}**Info:** *{{val['custom:info']}}*{{/if}}
+
+
+{{@if (Object.keys(val.inputs).length > 0)}}
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+{{@foreach(val.inputs) => key, val}}
+| {{key}} | {{val.type}} | {{val.description}} |
+{{/foreach}}
+{{/if}}
+
+{{@if (Object.keys(val.outputs).length > 0)}}
+#### Returns
+
+| Name | Type | Description |
+|---|---|---|
+{{@foreach(val.outputs) => key, val}}
+| {{key}} | {{val.type}} | {{val.description}} |
+{{/foreach}}
+
+{{/if}}
+{{/foreach}}
+
+{{/if}}
+
 {{@if (Object.keys(it.events).length > 0)}}
 ## Events
 
