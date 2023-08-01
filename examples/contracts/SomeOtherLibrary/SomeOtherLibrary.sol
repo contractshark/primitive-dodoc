@@ -1,7 +1,12 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity ^0.8.6;
 
-contract SomeOtherLibrary {
+library SomeOtherLibrary {
+    /// @notice Invalid hash.
+    /// @dev Reverts when hash has already been discovered.
+    /// @param invalidHash Invalid hash. 
+    error SomeError(bytes32 invalidHash);
+
     /// @dev This function uses `keccak256(..)` to hash text.
     /// @notice Hash returned.
     /// @param someText Any text that you want to hash.

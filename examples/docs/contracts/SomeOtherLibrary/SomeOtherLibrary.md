@@ -64,3 +64,24 @@ Hash returned.
 
 
 
+## Errors
+
+### SomeError
+
+```solidity
+error SomeError(bytes32 invalidHash)
+```
+
+Invalid hash.
+*Reverts when hash has already been discovered.*
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| invalidHash | bytes32 | Invalid hash.  |
+
+

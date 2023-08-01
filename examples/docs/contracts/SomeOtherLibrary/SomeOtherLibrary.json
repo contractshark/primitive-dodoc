@@ -1,7 +1,19 @@
 {
     "methods": {},
     "events": {},
-    "errors": {},
+    "errors": {
+        "SomeError": {
+            "code": "error SomeError(bytes32 invalidHash)",
+            "inputs": {
+                "invalidHash": {
+                    "type": "bytes32",
+                    "description": "Invalid hash. "
+                }
+            },
+            "notice": "Invalid hash.",
+            "details": "Reverts when hash has already been discovered."
+        }
+    },
     "internalMethods": {
         "someFunction(string)": {
             "code": "function someFunction(string someText) internal pure returns (bytes32)",
