@@ -260,7 +260,10 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
 
           doc[docEntry][functionName].outputs[returnVariableName] = {
             type: returnParamType,
-            description: returnDoc[index].replace(`@return ${returnVariableName} `, ''),
+            // return tag param is not mandatory
+            description: returnDoc[index]
+              .replace(`@return ${returnVariableName} `, '') // this will be removed if param is present
+              .replace('@return ', ''), // this will be removed if param is not present
           };
         });
       }

@@ -1,0 +1,43 @@
+{
+    "methods": {},
+    "events": {},
+    "errors": {},
+    "internalMethods": {
+        "someFunction(string)": {
+            "code": "function someFunction(string someText) internal pure returns (bytes32)",
+            "inputs": {
+                "someText": {
+                    "type": "string",
+                    "description": "Any text that you want to hash."
+                }
+            },
+            "outputs": {
+                "_0": {
+                    "type": "bytes32",
+                    "description": "The hash that was sent as a parameter."
+                }
+            },
+            "details": "This function uses `keccak256(..)` to hash text.",
+            "notice": "Hash returned."
+        },
+        "someOtherFunction(string)": {
+            "code": "function someOtherFunction(string someText) internal pure returns (bytes32 hash)",
+            "inputs": {
+                "someText": {
+                    "type": "string",
+                    "description": "Any text that you want to hash."
+                }
+            },
+            "outputs": {
+                "hash": {
+                    "type": "bytes32",
+                    "description": "The hash that was sent as a parameter."
+                }
+            },
+            "details": "This function uses `sha256(..)` to hash text.",
+            "notice": "Hash returned."
+        }
+    },
+    "path": "SomeOtherLibrary",
+    "name": "SomeOtherLibrary"
+}
