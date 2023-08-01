@@ -6,9 +6,10 @@ import { TASK_COMPILE } from 'hardhat/builtin-tasks/task-names';
 import { HardhatConfig, HardhatRuntimeEnvironment, HardhatUserConfig } from 'hardhat/types';
 import * as Sqrl from 'squirrelly';
 
-import { CompilerOutputContractWithDocumentation, Doc } from './dodocTypes';
+import { CompilerOutputContractWithDocumentation, CustomTag, Doc, Param } from './dodocTypes';
 import { decodeAbi } from './abiDecoder';
 import './type-extensions';
+import { clearWhitespaces } from './utils';
 
 extendConfig((config: HardhatConfig, userConfig: Readonly<HardhatUserConfig>) => {
   // eslint-disable-next-line no-param-reassign
@@ -435,11 +436,95 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
       }
     };
 
-    const libraryNodes = AST.filter((node: any) => node.contractKind === 'library');
+    const parseNatspecOfErrorsFromAST = async (contractIndex: number) => {
+      let j = contractIndex;
+      while (AST[j].nodeType !== 'PragmaDirective') {
+        if (AST[j].nodeType === 'ErrorDefinition') {
+          const errorName: string = AST[j].name;
+          const errorDocs: { tag?: string; description?: string }[] = AST[j].documentation?.text
+            .split('@')
+            .map((elem: string) => ({
+              tag: elem.substring(0, elem.indexOf(' ')),
+              description: elem.substring(elem.indexOf(' ') + 1),
+            }));
+          const errorParams: { paramType: string; paramName: string }[] = AST[j].parameters.parameters.map(
+            (elem: any) => ({
+              paramType: elem.typeName.name,
+              paramName: elem.name,
+            }),
+          );
+
+          const code = `${errorName}(${errorParams.map(
+            (elem: { paramType: string; paramName: string }) => elem.paramType,
+          )})`;
+          const notice = errorDocs?.filter(
+            (elem: { tag?: string; description?: string }) => elem.tag === 'notice',
+          )[0];
+          const dev = errorDocs?.filter(
+            (elem: { tag?: string; description?: string }) => elem.tag === 'dev',
+          )[0];
+          const custom = errorDocs?.filter((elem: { tag?: string; description?: string }) =>
+            elem.tag?.startsWith('custom'),
+          );
+
+          const inputs: { [key: string]: Param } = {};
+          errorParams.forEach((elem: { paramType: string; paramName: string }) => {
+            let elemDescription: string = '';
+            errorDocs?.forEach((docsElem: { tag?: string; description?: string }) => {
+              if (docsElem.tag === 'param') {
+                if (docsElem.description) {
+                  elemDescription = docsElem.description.replace(`${elem.paramName}`, '');
+                }
+              }
+            });
+
+            inputs[elem.paramName] = {
+              type: elem.paramType,
+              description: clearWhitespaces(elemDescription),
+            };
+          });
+
+          const error: {
+            code?: string;
+            notice?: string;
+            details?: string;
+            inputs: { [key: string]: Param };
+            [key: CustomTag<string>]: string;
+          } = {
+            code,
+            notice: clearWhitespaces(notice?.description ? notice.description : ''),
+            details: clearWhitespaces(dev?.description ? dev.description : ''),
+            inputs,
+          };
+          custom?.forEach((elem) => {
+            if (elem.tag) {
+              const strippedValue = elem.tag.substring(7);
+              if (strippedValue.length > 0) {
+                if (elem.description) {
+                  error[`custom:${strippedValue}`] = clearWhitespaces(elem.description);
+                }
+              }
+            }
+          });
+
+          doc.errors[errorName] = error;
+        }
+
+        j -= 1;
+      }
+    };
+
+    const libraryNodes: any[] = [];
+    AST.forEach((node: any, index: number) => {
+      if (node.contractKind === 'library') {
+        libraryNodes.push({ node, index });
+      }
+    });
 
     // library do not have inheritance, so we can parse the Natspec directly
-    libraryNodes.forEach((library: any) => {
-      parseNatspecOfInternalFunctionsFromAST(library);
+    libraryNodes.forEach(({ node, index }: { node: any; index: number }) => {
+      parseNatspecOfInternalFunctionsFromAST(node);
+      parseNatspecOfErrorsFromAST(index);
     });
 
     // contract have inheritance, so we need to search for all the internal functions

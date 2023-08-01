@@ -2,16 +2,49 @@
     "methods": {},
     "events": {},
     "errors": {
+        "WhateverError": {
+            "code": "WhateverError(bytes16)",
+            "notice": "",
+            "details": "",
+            "inputs": {
+                "somethingElse": {
+                    "type": "bytes16",
+                    "description": ""
+                }
+            }
+        },
+        "ThirdError": {
+            "code": "ThirdError(bytes4,uint256)",
+            "notice": "",
+            "details": "this is the third error",
+            "inputs": {
+                "functionSelector": {
+                    "type": "bytes4",
+                    "description": "fucntionMask This is a function mask"
+                },
+                "fucntionMask": {
+                    "type": "uint256",
+                    "description": "This is a function mask"
+                }
+            },
+            "custom:danger": "Be careful, this Error is dangerous"
+        },
+        "SomeOtherError": {
+            "code": "SomeOtherError()",
+            "notice": "Some Other Error fired!!!!",
+            "details": "",
+            "inputs": {}
+        },
         "SomeError": {
-            "code": "error SomeError(bytes32 invalidHash)",
+            "code": "SomeError(bytes32)",
+            "notice": "Invalid hash",
+            "details": "Reverts when hash has already been discovered",
             "inputs": {
                 "invalidHash": {
                     "type": "bytes32",
-                    "description": "Invalid hash. "
+                    "description": "Invalid hash."
                 }
-            },
-            "notice": "Invalid hash.",
-            "details": "Reverts when hash has already been discovered."
+            }
         }
     },
     "internalMethods": {

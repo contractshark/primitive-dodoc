@@ -66,14 +66,14 @@ Hash returned.
 
 ## Errors
 
-### SomeError
+### WhateverError
 
 ```solidity
-error SomeError(bytes32 invalidHash)
+WhateverError(bytes16)
 ```
 
-Invalid hash.
-*Reverts when hash has already been discovered.*
+
+
 
 
 
@@ -82,6 +82,56 @@ Invalid hash.
 
 | Name | Type | Description |
 |---|---|---|
-| invalidHash | bytes32 | Invalid hash.  |
+| somethingElse | bytes16 |  |
+
+### ThirdError
+
+```solidity
+ThirdError(bytes4,uint256)
+```
+
+
+*this is the third error*
+
+**Danger:** *Be careful, this Error is dangerous*
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| functionSelector | bytes4 | fucntionMask This is a function mask |
+| fucntionMask | uint256 | This is a function mask |
+
+### SomeOtherError
+
+```solidity
+SomeOtherError()
+```
+
+Some Other Error fired!!!!
+
+
+
+
+
+
+### SomeError
+
+```solidity
+SomeError(bytes32)
+```
+
+Invalid hash
+*Reverts when hash has already been discovered*
+
+
+
+
+#### Parameters
+
+| Name | Type | Description |
+|---|---|---|
+| invalidHash | bytes32 | Invalid hash. |
 
 

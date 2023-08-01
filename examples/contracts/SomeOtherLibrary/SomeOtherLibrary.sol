@@ -1,12 +1,23 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity ^0.8.6;
 
-library SomeOtherLibrary {
-    /// @notice Invalid hash.
-    /// @dev Reverts when hash has already been discovered.
-    /// @param invalidHash Invalid hash. 
-    error SomeError(bytes32 invalidHash);
+/// @notice Invalid hash.
+/// @dev Reverts when hash has already been discovered.
+/// @param invalidHash Invalid hash.
+error SomeError(bytes32 invalidHash);
 
+/// @notice Some Other Error fired!!!!
+error SomeOtherError();
+
+/// @dev this is the third error.
+/// @custom:danger Be careful, this Error is dangerous!
+/// @param functionSelector This is a function selector
+/// @param fucntionMask This is a function mask
+error ThirdError(bytes4 functionSelector, uint256 fucntionMask);
+
+error WhateverError(bytes16 somethingElse);
+
+library SomeOtherLibrary {
     /// @dev This function uses `keccak256(..)` to hash text.
     /// @notice Hash returned.
     /// @param someText Any text that you want to hash.
