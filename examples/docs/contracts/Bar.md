@@ -1,14 +1,14 @@
 # Bar
 
-*Primitive*
+_Primitive_
 
 > Bar contract
 
 Manages the bar
 
-*Blablou*
+_Blablou_
 
-**Version:** *v2.0.1*
+**Version:** _v2.0.1_
 
 ## Methods
 
@@ -19,15 +19,12 @@ constructor(uint256 someNumber)
 ```
 
 This is the notice of the constructor
-*This is a constructor*
-
-
-
+_This is a constructor_
 
 #### Parameters
 
-| Name | Type | Description |
-|---|---|---|
+| Name       | Type    | Description                      |
+| ---------- | ------- | -------------------------------- |
 | someNumber | uint256 | The description of the parameter |
 
 ### fallback
@@ -37,21 +34,18 @@ fallback(bytes calldata fallbackParam) external nonpayable returns (bytes memory
 ```
 
 This is the notice of the fallback
-*This is a fallback*
-
-
-
+_This is a fallback_
 
 #### Parameters
 
-| Name | Type | Description |
-|---|---|---|
+| Name          | Type  | Description                  |
+| ------------- | ----- | ---------------------------- |
 | fallbackParam | bytes | some details about the param |
 
 #### Returns
 
-| Name | Type | Description |
-|---|---|---|
+| Name     | Type  | Description                          |
+| -------- | ----- | ------------------------------------ |
 | testtest | bytes | result some details about the result |
 
 ### baap
@@ -62,16 +56,12 @@ function baap(uint256 bar, address aar) external nonpayable
 
 Baaps the yaps
 
-
-
-
-
 #### Parameters
 
-| Name | Type | Description |
-|---|---|---|
-| bar | uint256 | Number of bar |
-| aar | address | Address of aar |
+| Name | Type    | Description    |
+| ---- | ------- | -------------- |
+| bar  | uint256 | Number of bar  |
+| aar  | address | Address of aar |
 
 ### boop
 
@@ -81,15 +71,13 @@ function boop(uint256 bar) external nonpayable
 
 Cool function bro
 
-**Requirement:** *Check first requirementCheck second requirement*
-
-
+**Requirement:** _Check first requirementCheck second requirement_
 
 #### Parameters
 
-| Name | Type | Description |
-|---|---|---|
-| bar | uint256 | undefined |
+| Name | Type    | Description |
+| ---- | ------- | ----------- |
+| bar  | uint256 | undefined   |
 
 ### boop
 
@@ -99,16 +87,12 @@ function boop(uint256 bar, uint256 bar2) external nonpayable
 
 Alt cool function bro
 
-
-
-
-
 #### Parameters
 
-| Name | Type | Description |
-|---|---|---|
-| bar | uint256 | undefined |
-| bar2 | uint256 | undefined |
+| Name | Type    | Description |
+| ---- | ------- | ----------- |
+| bar  | uint256 | undefined   |
+| bar2 | uint256 | undefined   |
 
 ### hello
 
@@ -116,16 +100,10 @@ Alt cool function bro
 function hello(bytes someCallData) external nonpayable
 ```
 
-
-
-
-
-
-
 #### Parameters
 
-| Name | Type | Description |
-|---|---|---|
+| Name         | Type  | Description       |
+| ------------ | ----- | ----------------- |
 | someCallData | bytes | hello tic tac toe |
 
 ### set
@@ -134,17 +112,11 @@ function hello(bytes someCallData) external nonpayable
 function set(IBar.T t) external nonpayable
 ```
 
-
-
-
-
-
-
 #### Parameters
 
-| Name | Type | Description |
-|---|---|---|
-| t | IBar.T | undefined |
+| Name | Type   | Description |
+| ---- | ------ | ----------- |
+| t    | IBar.T | undefined   |
 
 ### receive
 
@@ -153,17 +125,13 @@ receive() external payable
 ```
 
 This is the notice of the `receive()` function
-*This is a `receive()` function*
+_This is a `receive()` function_
 
-
-**Info:** *if sending native tokens with some graffiti, check the {`fallback()`} function documentation.*
-
-
-
+**Info:** _if sending native tokens with some graffiti, check the {`fallback()`} function documentation._
 
 ## Internal Methods
 
-### _baap
+### \_baap
 
 ```solidity
 function _baap(uint256 bar, address aar) internal nonpayable
@@ -171,18 +139,12 @@ function _baap(uint256 bar, address aar) internal nonpayable
 
 Baaps the yaps internally
 
-
-
-
-
 #### Parameters
 
-| Name | Type | Description |
-|---|---|---|
-| bar | uint256 | Number of bar |
-| aar | address | Address of aar |
-
-
+| Name | Type    | Description    |
+| ---- | ------- | -------------- |
+| bar  | uint256 | Number of bar  |
+| aar  | address | Address of aar |
 
 ## Events
 
@@ -193,18 +155,15 @@ event Transfer(uint256 foo)
 ```
 
 Emitted when transfer
-*Transfer some stuff*
+_Transfer some stuff_
 
-**Danger:** *This event exposes private info*
-
+**Danger:** _This event exposes private info_
 
 #### Parameters
 
-| Name | Type | Description |
-|---|---|---|
+| Name | Type    | Description     |
+| ---- | ------- | --------------- |
 | foo  | uint256 | Amount of stuff |
-
-
 
 ## Errors
 
@@ -215,15 +174,12 @@ error Doh(bool yay)
 ```
 
 Thrown when doh
-*Bad doh error*
+_Bad doh error_
 
-
-**Info:** *Additional info*
+**Info:** _Additional info_
 
 #### Parameters
 
 | Name | Type | Description |
-|---|---|---|
-| yay | bool | A bool |
-
-
+| ---- | ---- | ----------- |
+| yay  | bool | A bool      |

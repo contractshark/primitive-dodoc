@@ -1,72 +1,72 @@
 {
-    "methods": {
-        "boop(uint256)": {
-            "stateMutability": "nonpayable",
-            "code": "function boop(uint256 bar) external nonpayable",
-            "inputs": {
-                "bar": {
-                    "type": "uint256"
-                }
-            },
-            "outputs": {}
+  "methods": {
+    "boop(uint256)": {
+      "stateMutability": "nonpayable",
+      "code": "function boop(uint256 bar) external nonpayable",
+      "inputs": {
+        "bar": {
+          "type": "uint256"
+        }
+      },
+      "outputs": {}
+    },
+    "set(tuple)": {
+      "stateMutability": "nonpayable",
+      "code": "function set(IBar.T t) external nonpayable",
+      "inputs": {
+        "t": {
+          "type": "IBar.T"
+        }
+      },
+      "outputs": {}
+    }
+  },
+  "events": {
+    "Transfer": {
+      "code": "event Transfer(uint256 foo)",
+      "inputs": {
+        "foo": {
+          "type": "uint256",
+          "indexed": false,
+          "description": "Amount of stuff"
+        }
+      },
+      "notice": "Emitted when transfer",
+      "details": "Transfer some stuff",
+      "custom:danger": "This event exposes private info"
+    }
+  },
+  "errors": {
+    "Doh": {
+      "code": "error Doh(bool yay)",
+      "inputs": {
+        "yay": {
+          "type": "bool",
+          "description": "A bool"
+        }
+      },
+      "notice": "Thrown when doh",
+      "details": "Bad doh error",
+      "custom:info": "Additional info"
+    }
+  },
+  "internalMethods": {
+    "_baap(uint256,address)": {
+      "code": "function _baap(uint256 bar, address aar) internal nonpayable",
+      "inputs": {
+        "bar": {
+          "type": "uint256",
+          "description": "Number of bar"
         },
-        "set(tuple)": {
-            "stateMutability": "nonpayable",
-            "code": "function set(IBar.T t) external nonpayable",
-            "inputs": {
-                "t": {
-                    "type": "IBar.T"
-                }
-            },
-            "outputs": {}
+        "aar": {
+          "type": "address",
+          "description": "Address of aar"
         }
-    },
-    "events": {
-        "Transfer": {
-            "code": "event Transfer(uint256 foo)",
-            "inputs": {
-                "foo": {
-                    "type": "uint256",
-                    "indexed": false,
-                    "description": "Amount of stuff"
-                }
-            },
-            "notice": "Emitted when transfer",
-            "details": "Transfer some stuff",
-            "custom:danger": "This event exposes private info"
-        }
-    },
-    "errors": {
-        "Doh": {
-            "code": "error Doh(bool yay)",
-            "inputs": {
-                "yay": {
-                    "type": "bool",
-                    "description": "A bool"
-                }
-            },
-            "notice": "Thrown when doh",
-            "details": "Bad doh error",
-            "custom:info": "Additional info"
-        }
-    },
-    "internalMethods": {
-        "_baap(uint256,address)": {
-            "code": "function _baap(uint256 bar, address aar) internal nonpayable",
-            "inputs": {
-                "bar": {
-                    "type": "uint256",
-                    "description": "Number of bar"
-                },
-                "aar": {
-                    "type": "address",
-                    "description": "Address of aar"
-                }
-            },
-            "outputs": {},
-            "notice": "Baaps the yaps internally"
-        }
-    },
-    "path": "",
-    "name": "IBar"
+      },
+      "outputs": {},
+      "notice": "Baaps the yaps internally"
+    }
+  },
+  "path": "",
+  "name": "IBar"
 }
