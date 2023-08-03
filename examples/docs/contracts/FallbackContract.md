@@ -1,15 +1,5 @@
 # FallbackContract
 
-
-
-
-
-
-
-
-
-
-
 ## Methods
 
 ### fallback
@@ -19,24 +9,16 @@ fallback(bytes calldata value) external nonpayable returns (bytes memory returnV
 ```
 
 A notice for the fallback
-*A developer documentation comment for the fallback*
-
-
-
+_A developer documentation comment for the fallback_
 
 #### Parameters
 
-| Name | Type | Description |
-|---|---|---|
+| Name  | Type  | Description                        |
+| ----- | ----- | ---------------------------------- |
 | value | bytes | Some random value for the fallback |
 
 #### Returns
 
-| Name | Type | Description |
-|---|---|---|
+| Name        | Type  | Description                          |
+| ----------- | ----- | ------------------------------------ |
 | returnValue | bytes | A nice return value post-computation |
-
-
-
-
-

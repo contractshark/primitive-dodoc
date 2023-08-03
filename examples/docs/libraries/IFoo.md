@@ -1,15 +1,5 @@
 # IFoo
 
-
-
-
-
-
-
-
-
-
-
 ## Methods
 
 ### nonces
@@ -19,24 +9,16 @@ function nonces(address _0) external view returns (uint256)
 ```
 
 Returns the nonce of an address
-*Nonces much*
-
-
-
+_Nonces much_
 
 #### Parameters
 
-| Name | Type | Description |
-|---|---|---|
-| _0 | address | Address to inspect |
+| Name | Type    | Description        |
+| ---- | ------- | ------------------ |
+| \_0  | address | Address to inspect |
 
 #### Returns
 
-| Name | Type | Description |
-|---|---|---|
-| _0 | uint256 | Current nonce of the address |
-
-
-
-
-
+| Name | Type    | Description                  |
+| ---- | ------- | ---------------------------- |
+| \_0  | uint256 | Current nonce of the address |

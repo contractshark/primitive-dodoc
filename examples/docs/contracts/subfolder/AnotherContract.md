@@ -1,15 +1,5 @@
 # AnotherContract
 
-
-
-
-
-
-
-
-
-
-
 ## Methods
 
 ### tip
@@ -19,19 +9,11 @@ function tip(uint256 much, address mop) external nonpayable
 ```
 
 A strange function
-*Someone wrote this weird function...*
-
-
-
+_Someone wrote this weird function..._
 
 #### Parameters
 
-| Name | Type | Description |
-|---|---|---|
-| much | uint256 | How much |
-| mop | address | No idea what this is |
-
-
-
-
-
+| Name | Type    | Description          |
+| ---- | ------- | -------------------- |
+| much | uint256 | How much             |
+| mop  | address | No idea what this is |

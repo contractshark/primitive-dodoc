@@ -9,13 +9,17 @@ error SomeError(bytes32 invalidHash);
 /// @notice Some Other Error fired!!!!
 error SomeOtherError();
 
-/// @dev this is the third error.
+/// @dev This is the third error.
+/// The error does the following things:
+/// - Shows you the `functionSelector`.
+/// - Shows you the `functionMask`.
+/// - Shows you an error.
 /// @custom:danger Be careful, this Error is dangerous!
 /// @param functionSelector This is a function selector
-/// @param fucntionMask This is a function mask
-error ThirdError(bytes4 functionSelector, uint256 fucntionMask);
+/// @param functionMask This is a function mask
+error ThirdError(bytes4 functionSelector, uint256 functionMask);
 
-error WhateverError(bytes16 somethingElse);
+error ErrorWithoutNatspec(bytes16 somethingElse);
 
 library SomeOtherLibrary {
     /// @dev This function uses `keccak256(..)` to hash text.

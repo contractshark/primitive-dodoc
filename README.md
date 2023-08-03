@@ -144,7 +144,6 @@ Once you're satisfied, simply refer to your template using the `templatePath` pa
 
 Feel free to open an issue if you need help or if you encounter a problem! Here are some already known problems though:
 
-- If you're defining Errors in Libraries, please do that in the scope of the contract.
 - Due to the technical limitations of the Solidity compiler, the documentation of `private` functions is not rendered.
 - Functions that are not commented at all might not be rendered.
 - State variables overriding functions defined by an interface might "erase" the name of the parameters. A current workaround is to name the function parameters using the `_0`, `_1`, ... format.

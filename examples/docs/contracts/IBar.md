@@ -1,15 +1,5 @@
 # IBar
 
-
-
-
-
-
-
-
-
-
-
 ## Methods
 
 ### boop
@@ -18,17 +8,11 @@
 function boop(uint256 bar) external nonpayable
 ```
 
-
-
-
-
-
-
 #### Parameters
 
-| Name | Type | Description |
-|---|---|---|
-| bar | uint256 | undefined |
+| Name | Type    | Description |
+| ---- | ------- | ----------- |
+| bar  | uint256 | undefined   |
 
 ### set
 
@@ -36,23 +20,15 @@ function boop(uint256 bar) external nonpayable
 function set(IBar.T t) external nonpayable
 ```
 
-
-
-
-
-
-
 #### Parameters
 
-| Name | Type | Description |
-|---|---|---|
-| t | IBar.T | undefined |
-
-
+| Name | Type   | Description |
+| ---- | ------ | ----------- |
+| t    | IBar.T | undefined   |
 
 ## Internal Methods
 
-### _baap
+### \_baap
 
 ```solidity
 function _baap(uint256 bar, address aar) internal nonpayable
@@ -60,18 +36,12 @@ function _baap(uint256 bar, address aar) internal nonpayable
 
 Baaps the yaps internally
 
-
-
-
-
 #### Parameters
 
-| Name | Type | Description |
-|---|---|---|
-| bar | uint256 | Number of bar |
-| aar | address | Address of aar |
-
-
+| Name | Type    | Description    |
+| ---- | ------- | -------------- |
+| bar  | uint256 | Number of bar  |
+| aar  | address | Address of aar |
 
 ## Events
 
@@ -82,18 +52,15 @@ event Transfer(uint256 foo)
 ```
 
 Emitted when transfer
-*Transfer some stuff*
+_Transfer some stuff_
 
-**Danger:** *This event exposes private info*
-
+**Danger:** _This event exposes private info_
 
 #### Parameters
 
-| Name | Type | Description |
-|---|---|---|
+| Name | Type    | Description     |
+| ---- | ------- | --------------- |
 | foo  | uint256 | Amount of stuff |
-
-
 
 ## Errors
 
@@ -104,15 +71,12 @@ error Doh(bool yay)
 ```
 
 Thrown when doh
-*Bad doh error*
+_Bad doh error_
 
-
-**Info:** *Additional info*
+**Info:** _Additional info_
 
 #### Parameters
 
 | Name | Type | Description |
-|---|---|---|
-| yay | bool | A bool |
-
-
+| ---- | ---- | ----------- |
+| yay  | bool | A bool      |

@@ -1,16 +1,5 @@
 # SomeOtherLibrary
 
-
-
-
-
-
-
-
-
-
-
-
 ## Internal Methods
 
 ### someFunction
@@ -20,22 +9,19 @@ function someFunction(string someText) internal pure returns (bytes32)
 ```
 
 Hash returned.
-*This function uses `keccak256(..)` to hash text.*
-
-
-
+_This function uses `keccak256(..)` to hash text._
 
 #### Parameters
 
-| Name | Type | Description |
-|---|---|---|
+| Name     | Type   | Description                     |
+| -------- | ------ | ------------------------------- |
 | someText | string | Any text that you want to hash. |
 
 #### Returns
 
-| Name | Type | Description |
-|---|---|---|
-| _0 | bytes32 | The hash that was sent as a parameter. |
+| Name | Type    | Description                            |
+| ---- | ------- | -------------------------------------- |
+| \_0  | bytes32 | The hash that was sent as a parameter. |
 
 ### someOtherFunction
 
@@ -44,64 +30,36 @@ function someOtherFunction(string someText) internal pure returns (bytes32 hash)
 ```
 
 Hash returned.
-*This function uses `sha256(..)` to hash text.*
-
-
-
+_This function uses `sha256(..)` to hash text._
 
 #### Parameters
 
-| Name | Type | Description |
-|---|---|---|
+| Name     | Type   | Description                     |
+| -------- | ------ | ------------------------------- |
 | someText | string | Any text that you want to hash. |
 
 #### Returns
 
-| Name | Type | Description |
-|---|---|---|
+| Name | Type    | Description                            |
+| ---- | ------- | -------------------------------------- |
 | hash | bytes32 | The hash that was sent as a parameter. |
-
-
-
 
 ## Errors
 
-### WhateverError
+### SomeError
 
 ```solidity
-WhateverError(bytes16)
+SomeError(bytes32)
 ```
 
-
-
-
-
-
+Invalid hash
+_Reverts when hash has already been discovered_
 
 #### Parameters
 
-| Name | Type | Description |
-|---|---|---|
-| somethingElse | bytes16 |  |
-
-### ThirdError
-
-```solidity
-ThirdError(bytes4,uint256)
-```
-
-
-*this is the third error*
-
-**Danger:** *Be careful, this Error is dangerous*
-
-
-#### Parameters
-
-| Name | Type | Description |
-|---|---|---|
-| functionSelector | bytes4 | fucntionMask This is a function mask |
-| fucntionMask | uint256 | This is a function mask |
+| Name        | Type    | Description   |
+| ----------- | ------- | ------------- |
+| invalidHash | bytes32 | Invalid hash. |
 
 ### SomeOtherError
 
@@ -111,27 +69,36 @@ SomeOtherError()
 
 Some Other Error fired!!!!
 
-
-
-
-
-
-### SomeError
+### ThirdError
 
 ```solidity
-SomeError(bytes32)
+ThirdError(bytes4,uint256)
 ```
 
-Invalid hash
-*Reverts when hash has already been discovered*
+\*This is the third error.
+The error does the following things:
 
+- Shows you the `functionSelector`.
+- Shows you the `functionMask`.
+- Shows you an error\*
 
-
+**Danger:** _Be careful, this Error is dangerous_
 
 #### Parameters
 
-| Name | Type | Description |
-|---|---|---|
-| invalidHash | bytes32 | Invalid hash. |
+| Name             | Type    | Description                          |
+| ---------------- | ------- | ------------------------------------ |
+| functionSelector | bytes4  | functionMask This is a function mask |
+| functionMask     | uint256 | This is a function mask              |
 
+### ErrorWithoutNatspec
 
+```solidity
+ErrorWithoutNatspec(bytes16)
+```
+
+#### Parameters
+
+| Name          | Type    | Description |
+| ------------- | ------- | ----------- |
+| somethingElse | bytes16 |             |

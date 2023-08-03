@@ -1,88 +1,88 @@
 {
-    "methods": {},
-    "events": {},
-    "errors": {
-        "WhateverError": {
-            "code": "WhateverError(bytes16)",
-            "notice": "",
-            "details": "",
-            "inputs": {
-                "somethingElse": {
-                    "type": "bytes16",
-                    "description": ""
-                }
-            }
-        },
-        "ThirdError": {
-            "code": "ThirdError(bytes4,uint256)",
-            "notice": "",
-            "details": "this is the third error",
-            "inputs": {
-                "functionSelector": {
-                    "type": "bytes4",
-                    "description": "fucntionMask This is a function mask"
-                },
-                "fucntionMask": {
-                    "type": "uint256",
-                    "description": "This is a function mask"
-                }
-            },
-            "custom:danger": "Be careful, this Error is dangerous"
-        },
-        "SomeOtherError": {
-            "code": "SomeOtherError()",
-            "notice": "Some Other Error fired!!!!",
-            "details": "",
-            "inputs": {}
-        },
-        "SomeError": {
-            "code": "SomeError(bytes32)",
-            "notice": "Invalid hash",
-            "details": "Reverts when hash has already been discovered",
-            "inputs": {
-                "invalidHash": {
-                    "type": "bytes32",
-                    "description": "Invalid hash."
-                }
-            }
+  "methods": {},
+  "events": {},
+  "errors": {
+    "SomeError": {
+      "code": "SomeError(bytes32)",
+      "notice": "Invalid hash",
+      "details": "Reverts when hash has already been discovered",
+      "inputs": {
+        "invalidHash": {
+          "type": "bytes32",
+          "description": "Invalid hash."
         }
+      }
     },
-    "internalMethods": {
-        "someFunction(string)": {
-            "code": "function someFunction(string someText) internal pure returns (bytes32)",
-            "inputs": {
-                "someText": {
-                    "type": "string",
-                    "description": "Any text that you want to hash."
-                }
-            },
-            "outputs": {
-                "_0": {
-                    "type": "bytes32",
-                    "description": "The hash that was sent as a parameter."
-                }
-            },
-            "details": "This function uses `keccak256(..)` to hash text.",
-            "notice": "Hash returned."
+    "SomeOtherError": {
+      "code": "SomeOtherError()",
+      "notice": "Some Other Error fired!!!!",
+      "details": "",
+      "inputs": {}
+    },
+    "ThirdError": {
+      "code": "ThirdError(bytes4,uint256)",
+      "notice": "",
+      "details": "This is the third error.\n The error does the following things:\n - Shows you the `functionSelector`.\n - Shows you the `functionMask`.\n - Shows you an error",
+      "inputs": {
+        "functionSelector": {
+          "type": "bytes4",
+          "description": "functionMask This is a function mask"
         },
-        "someOtherFunction(string)": {
-            "code": "function someOtherFunction(string someText) internal pure returns (bytes32 hash)",
-            "inputs": {
-                "someText": {
-                    "type": "string",
-                    "description": "Any text that you want to hash."
-                }
-            },
-            "outputs": {
-                "hash": {
-                    "type": "bytes32",
-                    "description": "The hash that was sent as a parameter."
-                }
-            },
-            "details": "This function uses `sha256(..)` to hash text.",
-            "notice": "Hash returned."
+        "functionMask": {
+          "type": "uint256",
+          "description": "This is a function mask"
         }
+      },
+      "custom:danger": "Be careful, this Error is dangerous"
     },
-    "path": "SomeOtherLibrary",
-    "name": "SomeOtherLibrary"
+    "ErrorWithoutNatspec": {
+      "code": "ErrorWithoutNatspec(bytes16)",
+      "notice": "",
+      "details": "",
+      "inputs": {
+        "somethingElse": {
+          "type": "bytes16",
+          "description": ""
+        }
+      }
+    }
+  },
+  "internalMethods": {
+    "someFunction(string)": {
+      "code": "function someFunction(string someText) internal pure returns (bytes32)",
+      "inputs": {
+        "someText": {
+          "type": "string",
+          "description": "Any text that you want to hash."
+        }
+      },
+      "outputs": {
+        "_0": {
+          "type": "bytes32",
+          "description": "The hash that was sent as a parameter."
+        }
+      },
+      "details": "This function uses `keccak256(..)` to hash text.",
+      "notice": "Hash returned."
+    },
+    "someOtherFunction(string)": {
+      "code": "function someOtherFunction(string someText) internal pure returns (bytes32 hash)",
+      "inputs": {
+        "someText": {
+          "type": "string",
+          "description": "Any text that you want to hash."
+        }
+      },
+      "outputs": {
+        "hash": {
+          "type": "bytes32",
+          "description": "The hash that was sent as a parameter."
+        }
+      },
+      "details": "This function uses `sha256(..)` to hash text.",
+      "notice": "Hash returned."
+    }
+  },
+  "path": "SomeOtherLibrary",
+  "name": "SomeOtherLibrary"
 }

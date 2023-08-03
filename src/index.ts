@@ -6,7 +6,7 @@ import { TASK_COMPILE } from 'hardhat/builtin-tasks/task-names';
 import { HardhatConfig, HardhatRuntimeEnvironment, HardhatUserConfig } from 'hardhat/types';
 import * as Sqrl from 'squirrelly';
 
-import { CompilerOutputContractWithDocumentation, CustomTag, Doc, Param } from './dodocTypes';
+import { CompilerOutputContractWithDocumentation, Doc, Error, Param } from './dodocTypes';
 import { decodeAbi } from './abiDecoder';
 import './type-extensions';
 import { clearWhitespaces } from './utils';
@@ -124,7 +124,7 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
 
       for (const value in error) {
         if (value.startsWith('custom:')) {
-          const strippedValue = value.substring(7);
+          const strippedValue = value.replace('custom:', '');
           if (strippedValue.length > 0) {
             if (doc.errors[errorName]) {
               doc.errors[errorName][`custom:${strippedValue}`] = error[`custom:${strippedValue}`];
@@ -148,7 +148,7 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
 
       for (const value in event) {
         if (value.startsWith('custom:')) {
-          const strippedValue = value.substring(7);
+          const strippedValue = value.replace('custom:', '');
           if (strippedValue.length > 0) {
             if (doc.events[eventName]) {
               doc.events[eventName][`custom:${strippedValue}`] = event[`custom:${strippedValue}`];
@@ -436,18 +436,19 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
       }
     };
 
-    const parseNatspecOfErrorsFromAST = async (contractIndex: number) => {
-      let j = contractIndex;
-      while (AST[j].nodeType !== 'PragmaDirective') {
-        if (AST[j].nodeType === 'ErrorDefinition') {
-          const errorName: string = AST[j].name;
-          const errorDocs: { tag?: string; description?: string }[] = AST[j].documentation?.text
+    const parseNatspecOfErrorsFromAST = async () => {
+      AST.forEach((astNode: any) => {
+        if (astNode.nodeType === 'ErrorDefinition') {
+          const errorName: string = astNode.name;
+
+          const errorDocs: { tag?: string; description?: string }[] = astNode.documentation?.text
             .split('@')
             .map((elem: string) => ({
               tag: elem.substring(0, elem.indexOf(' ')),
               description: elem.substring(elem.indexOf(' ') + 1),
             }));
-          const errorParams: { paramType: string; paramName: string }[] = AST[j].parameters.parameters.map(
+
+          const errorParams: { paramType: string; paramName: string }[] = astNode.parameters.parameters.map(
             (elem: any) => ({
               paramType: elem.typeName.name,
               paramName: elem.name,
@@ -471,10 +472,8 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
           errorParams.forEach((elem: { paramType: string; paramName: string }) => {
             let elemDescription: string = '';
             errorDocs?.forEach((docsElem: { tag?: string; description?: string }) => {
-              if (docsElem.tag === 'param') {
-                if (docsElem.description) {
-                  elemDescription = docsElem.description.replace(`${elem.paramName}`, '');
-                }
+              if (docsElem.tag === 'param' && docsElem.description) {
+                elemDescription = docsElem.description.replace(`${elem.paramName}`, '');
               }
             });
 
@@ -484,34 +483,25 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
             };
           });
 
-          const error: {
-            code?: string;
-            notice?: string;
-            details?: string;
-            inputs: { [key: string]: Param };
-            [key: CustomTag<string>]: string;
-          } = {
+          const error: Error = {
             code,
             notice: clearWhitespaces(notice?.description ? notice.description : ''),
             details: clearWhitespaces(dev?.description ? dev.description : ''),
             inputs,
           };
+
           custom?.forEach((elem) => {
             if (elem.tag) {
-              const strippedValue = elem.tag.substring(7);
-              if (strippedValue.length > 0) {
-                if (elem.description) {
-                  error[`custom:${strippedValue}`] = clearWhitespaces(elem.description);
-                }
+              const strippedValue = elem.tag.replace('custom:', '');
+              if (strippedValue.length > 0 && elem.description) {
+                error[`custom:${strippedValue}`] = clearWhitespaces(elem.description);
               }
             }
           });
 
           doc.errors[errorName] = error;
         }
-
-        j -= 1;
-      }
+      });
     };
 
     const libraryNodes: any[] = [];
@@ -522,9 +512,9 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
     });
 
     // library do not have inheritance, so we can parse the Natspec directly
-    libraryNodes.forEach(({ node, index }: { node: any; index: number }) => {
+    libraryNodes.forEach(({ node }) => {
       parseNatspecOfInternalFunctionsFromAST(node);
-      parseNatspecOfErrorsFromAST(index);
+      parseNatspecOfErrorsFromAST();
     });
 
     // contract have inheritance, so we need to search for all the internal functions
@@ -584,7 +574,7 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
 
       for (const value in method) {
         if (value.startsWith('custom:')) {
-          const strippedValue = value.substring(7);
+          const strippedValue = value.replace('custom:', '');
           if (strippedValue.length > 0) {
             if (doc.methods[methodSig]) {
               doc.methods[methodSig][`custom:${strippedValue}`] = method[`custom:${strippedValue}`];
@@ -625,7 +615,7 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
 
     for (const value in info.devdoc) {
       if (value.startsWith('custom:')) {
-        const strippedValue = value.substring(7);
+        const strippedValue = value.replace('custom:', '');
         if (strippedValue.length > 0) {
           doc[`custom:${strippedValue}`] = info.devdoc[`custom:${strippedValue}`];
         }
