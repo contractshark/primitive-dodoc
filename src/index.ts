@@ -84,7 +84,9 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
 
     const doc: Doc = {
       ...decodeAbi(info.abi),
-      path: source.substr(sourcesPath.length).split('/').slice(0, -1).join('/'),
+      path: source.startsWith('@')
+        ? source.substring(source.lastIndexOf('/') + 1, source.indexOf('.sol'))
+        : source.substring(sourcesPath.length).split('/').slice(0, -1).join('/'),
     }; // get file path without filename
 
     // Fetches info from userdoc
