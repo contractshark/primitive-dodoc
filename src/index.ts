@@ -232,18 +232,14 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
       if (paramDocs.length > 0) {
         astNode.parameters.parameters.forEach((param: any) => {
           paramDocs.forEach((paramDoc: any) => {
+            const paramName = param.name;
+            const paramType = param.typeDescriptions.typeString;
             if (paramDoc.replace('@param ', '').startsWith(param.name)) {
-              const paramName = param.name;
-              const paramType = param.typeDescriptions.typeString;
-
               doc[docEntry][functionName].inputs[paramName] = {
                 type: paramType,
                 description: paramDoc.replace(`@param ${paramName} `, ''),
               };
             } else {
-              const paramName = param.name;
-              const paramType = param.typeDescriptions.typeString;
-
               doc[docEntry][functionName].inputs[paramName] = {
                 ...doc[docEntry][functionName].inputs[paramName],
                 type: paramType,
