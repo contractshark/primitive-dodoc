@@ -227,23 +227,27 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
     ) => {
       if ('documentation' in astNode === false) return;
 
-      const paramDoc = astNode.documentation.text
+      const paramDocs = astNode.documentation.text
         .match(/@.*/g)
         .filter((text: string) => text.match(/@param.*/));
 
-      if (paramDoc.length > 0) {
-        astNode.parameters.parameters.forEach((param: any, index: number) => {
-          // Check if there is not the same number of Natspec @param tags compared
-          // to the number of params for the function in the AST node.
-          if (paramDoc[index] === undefined) return;
-
-          const paramName = param.name;
-          const paramType = param.typeDescriptions.typeString;
-
-          doc[docEntry][functionName].inputs[paramName] = {
-            type: paramType,
-            description: paramDoc[index].replace(`@param ${paramName} `, ''),
-          };
+      if (paramDocs.length > 0) {
+        astNode.parameters.parameters.forEach((param: any) => {
+          paramDocs.forEach((paramDoc: any) => {
+            const paramName = param.name;
+            const paramType = param.typeDescriptions.typeString;
+            if (paramDoc.replace('@param ', '').startsWith(param.name)) {
+              doc[docEntry][functionName].inputs[paramName] = {
+                type: paramType,
+                description: paramDoc.replace(`@param ${paramName} `, ''),
+              };
+            } else {
+              doc[docEntry][functionName].inputs[paramName] = {
+                ...doc[docEntry][functionName].inputs[paramName],
+                type: paramType,
+              };
+            }
+          });
         });
       }
 
@@ -264,9 +268,13 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
           doc[docEntry][functionName].outputs[returnVariableName] = {
             type: returnParamType,
             // return tag param is not mandatory
-            description: returnDoc[index]
-              .replace(`@return ${returnVariableName} `, '') // this will be removed if param is present
-              .replace('@return ', ''), // this will be removed if param is not present
+            description:
+              returnDoc[index] === `@return ${returnVariableName}`
+                ? undefined
+                : returnDoc[index]
+                    .replace(`@return ${returnVariableName} `, '') // this will be removed if param is present with description
+                    .replace(`@return ${returnVariableName}`, undefined) // this will be removed if param is present and no description
+                    .replace('@return ', ''), // this will be removed if param is not present
           };
         });
       }
@@ -568,7 +576,9 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
         for (const output in method?.returns) {
           if (doc.methods[methodSig].outputs) {
             if (doc.methods[methodSig].outputs[output]) {
-              doc.methods[methodSig].outputs[output].description = method?.returns[output];
+              if (method?.returns[output] !== output) {
+                doc.methods[methodSig].outputs[output].description = method?.returns[output];
+              }
             }
           }
         }

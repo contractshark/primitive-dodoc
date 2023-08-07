@@ -1,0 +1,126 @@
+{
+  "methods": {
+    "move(bool,bool,bool,bool)": {
+      "stateMutability": "nonpayable",
+      "code": "function move(bool left, bool down, bool right, bool up) external nonpayable returns (bool, bool downPos, bool rightPos, bool upPos)",
+      "inputs": {
+        "left": {
+          "type": "bool"
+        },
+        "down": {
+          "type": "bool",
+          "description": "Move the car down."
+        },
+        "right": {
+          "type": "bool"
+        },
+        "up": {
+          "type": "bool",
+          "description": "Move the car up."
+        }
+      },
+      "outputs": {
+        "_0": {
+          "type": "bool",
+          "description": ""
+        },
+        "downPos": {
+          "type": "bool",
+          "description": "Some description for down return param"
+        },
+        "rightPos": {
+          "type": "bool"
+        },
+        "upPos": {
+          "type": "bool",
+          "description": "Some description for up return param"
+        }
+      }
+    },
+    "steer(uint256,uint256)": {
+      "stateMutability": "nonpayable",
+      "code": "function steer(uint256 degLeft, uint256 degRight) external nonpayable returns (uint256 finalDegLeft, uint256 finalDegRight)",
+      "inputs": {
+        "degLeft": {
+          "type": "uint256"
+        },
+        "degRight": {
+          "type": "uint256",
+          "description": "The amount of degrees you steer the wheel to the right."
+        }
+      },
+      "outputs": {
+        "finalDegLeft": {
+          "type": "uint256"
+        },
+        "finalDegRight": {
+          "type": "uint256",
+          "description": "Some return description"
+        }
+      }
+    }
+  },
+  "events": {},
+  "errors": {},
+  "internalMethods": {
+    "_steer(uint256,uint256)": {
+      "code": "function _steer(uint256 degLeft, uint256 degRight) internal nonpayable returns (uint256 finalDegLeft, uint256 finalDegRight)",
+      "inputs": {
+        "degLeft": {
+          "type": "uint256"
+        },
+        "degRight": {
+          "type": "uint256",
+          "description": "The amount of degrees you steer the wheel to the right."
+        }
+      },
+      "outputs": {
+        "finalDegLeft": {
+          "type": "uint256"
+        },
+        "finalDegRight": {
+          "type": "uint256",
+          "description": "Some return description"
+        }
+      }
+    },
+    "_move(bool,bool,bool,bool)": {
+      "code": "function _move(bool left, bool down, bool right, bool up) internal nonpayable returns (bool, bool downPos, bool rightPos, bool upPos)",
+      "inputs": {
+        "left": {
+          "type": "bool"
+        },
+        "down": {
+          "type": "bool",
+          "description": "Move the car down."
+        },
+        "right": {
+          "type": "bool"
+        },
+        "up": {
+          "type": "bool",
+          "description": "Move the car up."
+        }
+      },
+      "outputs": {
+        "_0": {
+          "type": "bool",
+          "description": ""
+        },
+        "downPos": {
+          "type": "bool",
+          "description": "Some description for down return param"
+        },
+        "rightPos": {
+          "type": "bool"
+        },
+        "upPos": {
+          "type": "bool",
+          "description": "Some description for up return param"
+        }
+      }
+    }
+  },
+  "path": "",
+  "name": "Car"
+}
