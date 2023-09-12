@@ -71,6 +71,29 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
                   if (parentContractDevdoc.events[eventSig]) {
                     if (!contractDevdoc.events[eventSig]) {
                       contractDevdoc.events[eventSig] = parentContractDevdoc.events[eventSig];
+                    } else {
+                      if (parentContractDevdoc.events[eventSig].details) {
+                        if (!contractDevdoc.events[eventSig].details) {
+                          contractDevdoc.events[eventSig].details =
+                            parentContractDevdoc.events[eventSig].details;
+                        }
+                      }
+
+                      if (parentContractDevdoc.events[eventSig].params) {
+                        if (!contractDevdoc.events[eventSig].params) {
+                          contractDevdoc.events[eventSig].params =
+                            parentContractDevdoc.events[eventSig].params;
+                        } else {
+                          for (const param in parentContractDevdoc.events[eventSig].params) {
+                            if (parentContractDevdoc.events[eventSig].params[param]) {
+                              if (!contractDevdoc.events[eventSig].params[param]) {
+                                contractDevdoc.events[eventSig].params[param] =
+                                  parentContractDevdoc.events[eventSig].params[param];
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   }
                 }
