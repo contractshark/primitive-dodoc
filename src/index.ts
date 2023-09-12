@@ -59,12 +59,23 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
         // Combining devdoc
         const contractDevdoc = info.devdoc;
         const parentContractDevdoc = contractBuildInfo.devdoc;
-        if (parentContractDevdoc !== undefined) {
-          if (contractDevdoc !== undefined) {
-            contractDevdoc.events = {
-              ...contractDevdoc.events,
-              ...parentContractDevdoc.events,
-            };
+        if (parentContractDevdoc) {
+          if (contractDevdoc) {
+            if (parentContractDevdoc.events) {
+              if (!contractDevdoc.events) {
+                contractDevdoc.events = {
+                  ...parentContractDevdoc.events,
+                };
+              } else {
+                for (const eventSig in parentContractDevdoc.events) {
+                  if (parentContractDevdoc.events[eventSig]) {
+                    if (!contractDevdoc.events[eventSig]) {
+                      contractDevdoc.events[eventSig] = parentContractDevdoc.events[eventSig];
+                    }
+                  }
+                }
+              }
+            }
           }
           info.devdoc = contractDevdoc;
         }
