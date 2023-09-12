@@ -81,6 +81,18 @@
       },
       "notice": "Emitted when the function doSomething is called.",
       "details": "More info about the event can be added here."
+    },
+    "NewEvent": {
+      "code": "event NewEvent(uint256 newNumber)",
+      "inputs": {
+        "newNumber": {
+          "type": "uint256",
+          "indexed": false,
+          "description": "Param description from `IExampleContract.sol`."
+        }
+      },
+      "notice": "Notice for event from `IExampleContract.sol`.",
+      "details": "Dev-info for event from `IExampleContract.sol`."
     }
   },
   "errors": {

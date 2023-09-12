@@ -6,6 +6,11 @@ pragma solidity >=0.8.6;
 /// @notice Put a simple description of the contract here.
 /// @dev And then a more complicated and tech oriented description of the contract there.
 interface IExampleContract {
+  /// @notice Notice for event from `IExampleContract.sol`.
+  /// @dev Dev-info for event from `IExampleContract.sol`.
+  /// @param newNumber Param description from `IExampleContract.sol`.
+  event NewEvent(uint newNumber);
+
   /// @notice Emitted when the function doSomething is called.
   /// @dev More info about the event can be added here.
   /// @param a Address of someone

@@ -22,6 +22,11 @@ error ThirdError(bytes4 functionSelector, uint256 functionMask);
 error ErrorWithoutNatspec(bytes16 somethingElse);
 
 library SomeOtherLibrary {
+    /// @notice Notice for event from `SomeOtherLibrary.sol`.
+    /// @dev Dev-info for event from `SomeOtherLibrary.sol`.
+    /// @param newNumber Param description from `SomeOtherLibrary.sol`.
+    event NewEvent(uint newNumber);
+
     /// @dev This function uses `keccak256(..)` to hash text.
     /// @notice Hash returned.
     /// @param someText Any text that you want to hash.

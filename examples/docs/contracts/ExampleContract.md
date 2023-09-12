@@ -124,6 +124,21 @@ _More info about the event can be added here._
 | a `indexed` | address | Address of someone |
 | b           | uint256 | A random number    |
 
+### NewEvent
+
+```solidity
+event NewEvent(uint256 newNumber)
+```
+
+Notice for event from `IExampleContract.sol`.
+_Dev-info for event from `IExampleContract.sol`._
+
+#### Parameters
+
+| Name      | Type    | Description                                    |
+| --------- | ------- | ---------------------------------------------- |
+| newNumber | uint256 | Param description from `IExampleContract.sol`. |
+
 ## Errors
 
 ### RandomError

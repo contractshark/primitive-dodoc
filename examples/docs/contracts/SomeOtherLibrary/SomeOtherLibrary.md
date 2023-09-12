@@ -44,6 +44,23 @@ _This function uses `sha256(..)` to hash text._
 | ---- | ------- | -------------------------------------- |
 | hash | bytes32 | The hash that was sent as a parameter. |
 
+## Events
+
+### NewEvent
+
+```solidity
+event NewEvent(uint256 newNumber)
+```
+
+Notice for event from `SomeOtherLibrary.sol`.
+_Dev-info for event from `SomeOtherLibrary.sol`._
+
+#### Parameters
+
+| Name      | Type    | Description                                    |
+| --------- | ------- | ---------------------------------------------- |
+| newNumber | uint256 | Param description from `SomeOtherLibrary.sol`. |
+
 ## Errors
 
 ### SomeError

@@ -1,6 +1,19 @@
 {
   "methods": {},
-  "events": {},
+  "events": {
+    "NewEvent": {
+      "code": "event NewEvent(uint256 newNumber)",
+      "inputs": {
+        "newNumber": {
+          "type": "uint256",
+          "indexed": false,
+          "description": "Param description from `SomeOtherLibrary.sol`."
+        }
+      },
+      "notice": "Notice for event from `SomeOtherLibrary.sol`.",
+      "details": "Dev-info for event from `SomeOtherLibrary.sol`."
+    }
+  },
   "errors": {
     "SomeError": {
       "code": "SomeError(bytes32)",
