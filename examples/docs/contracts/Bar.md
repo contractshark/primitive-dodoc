@@ -112,11 +112,14 @@ function hello(bytes someCallData) external nonpayable
 function set(IBar.T t) external nonpayable
 ```
 
+Sets a T
+_Uses a struct_
+
 #### Parameters
 
-| Name | Type   | Description |
-| ---- | ------ | ----------- |
-| t    | IBar.T | undefined   |
+| Name | Type   | Description  |
+| ---- | ------ | ------------ |
+| t    | IBar.T | T struct FTW |
 
 ### receive
 

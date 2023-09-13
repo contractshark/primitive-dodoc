@@ -57,7 +57,14 @@ export function getCodeFromAbi(element: AbiElement): string {
 }
 
 function getSigFromAbi(element: AbiElement): string {
-  return `${element.name}(${element.inputs.map((input) => input.type)})`;
+  return `${element.name}(${element.inputs.map((input) => {
+    if (input.type === 'tuple') {
+      return `(${(input as unknown as { components: any[] }).components.map(
+        (componentParam: any) => componentParam.type,
+      )})`;
+    }
+    return input.type;
+  })})`;
 }
 
 export function decodeAbi(abi: AbiElement[]): Doc {

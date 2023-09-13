@@ -20,11 +20,14 @@ function boop(uint256 bar) external nonpayable
 function set(IBar.T t) external nonpayable
 ```
 
+Sets a T
+_Uses a struct_
+
 #### Parameters
 
-| Name | Type   | Description |
-| ---- | ------ | ----------- |
-| t    | IBar.T | undefined   |
+| Name | Type   | Description  |
+| ---- | ------ | ------------ |
+| t    | IBar.T | T struct FTW |
 
 ## Internal Methods
 

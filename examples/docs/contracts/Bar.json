@@ -88,15 +88,18 @@
       },
       "outputs": {}
     },
-    "set(tuple)": {
+    "set((uint256,address))": {
       "stateMutability": "nonpayable",
       "code": "function set(IBar.T t) external nonpayable",
       "inputs": {
         "t": {
-          "type": "IBar.T"
+          "type": "IBar.T",
+          "description": "T struct FTW"
         }
       },
-      "outputs": {}
+      "outputs": {},
+      "notice": "Sets a T",
+      "details": "Uses a struct"
     },
     "receive()": {
       "stateMutability": "payable",
