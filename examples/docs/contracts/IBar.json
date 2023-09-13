@@ -22,7 +22,7 @@
     }
   },
   "events": {
-    "Transfer": {
+    "Transfer(uint256)": {
       "code": "event Transfer(uint256 foo)",
       "inputs": {
         "foo": {
@@ -37,7 +37,7 @@
     }
   },
   "errors": {
-    "Doh": {
+    "Doh(bool)": {
       "code": "error Doh(bool yay)",
       "inputs": {
         "yay": {

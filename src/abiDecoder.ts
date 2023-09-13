@@ -56,6 +56,10 @@ export function getCodeFromAbi(element: AbiElement): string {
   return code;
 }
 
+function getSigFromAbi(element: AbiElement): string {
+  return `${element.name}(${element.inputs.map((input) => input.type)})`;
+}
+
 export function decodeAbi(abi: AbiElement[]): Doc {
   const doc: Doc = {
     methods: {},
@@ -97,6 +101,8 @@ export function decodeAbi(abi: AbiElement[]): Doc {
     }
 
     if (el.type === 'function') {
+      const funcSig = getSigFromAbi(el);
+
       const func: Method = {
         stateMutability: el.stateMutability,
         code: getCodeFromAbi(el),
@@ -120,10 +126,12 @@ export function decodeAbi(abi: AbiElement[]): Doc {
         };
       });
 
-      doc.methods[`${el.name}(${el.inputs ? el.inputs.map((inp) => inp.type).join(',') : ''})`] = func;
+      doc.methods[funcSig] = func;
     }
 
     if (el.type === 'event') {
+      const eventSig = getSigFromAbi(el);
+
       const event: Event = {
         code: getCodeFromAbi(el),
         inputs: {},
@@ -138,10 +146,12 @@ export function decodeAbi(abi: AbiElement[]): Doc {
         };
       });
 
-      doc.events[el.name] = event;
+      doc.events[eventSig] = event;
     }
 
     if (el.type === 'error') {
+      const errorSig = getSigFromAbi(el);
+
       const error: Error = {
         code: getCodeFromAbi(el),
         inputs: {},
@@ -155,7 +165,7 @@ export function decodeAbi(abi: AbiElement[]): Doc {
         };
       });
 
-      doc.errors[el.name] = error;
+      doc.errors[errorSig] = error;
     }
   }
 

@@ -1,7 +1,7 @@
 {
   "methods": {},
   "events": {
-    "NewEvent": {
+    "NewEvent(uint256)": {
       "code": "event NewEvent(uint256 newNumber)",
       "inputs": {
         "newNumber": {

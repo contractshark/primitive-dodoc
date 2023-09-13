@@ -125,21 +125,18 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
 
     // Fetches info from userdoc
     for (const errorSig in info.userdoc?.errors) {
-      const [errorName] = errorSig.split('(');
       const error = info.userdoc?.errors[errorSig][0];
 
-      if (doc.errors[errorName] !== undefined) doc.errors[errorName].notice = error?.notice;
+      if (doc.errors[errorSig] !== undefined) doc.errors[errorSig].notice = error?.notice;
     }
 
     for (const eventSig in info.userdoc?.events) {
-      const [eventName] = eventSig.split('(');
       const event = info.userdoc?.events[eventSig];
 
-      if (doc.events[eventName] !== undefined) doc.events[eventName].notice = event?.notice;
+      if (doc.events[eventSig] !== undefined) doc.events[eventSig].notice = event?.notice;
     }
 
     for (const methodSig in info.userdoc?.methods) {
-      // const [methodName] = methodSig.split('(');
       const method = info.userdoc?.methods[methodSig];
 
       if (doc.methods[methodSig] !== undefined) doc.methods[methodSig].notice = method?.notice;
@@ -147,14 +144,13 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
 
     // Fetches info from devdoc
     for (const errorSig in info.devdoc?.errors) {
-      const [errorName] = errorSig.split('(');
       const error = info.devdoc?.errors[errorSig][0];
 
-      if (doc.errors[errorName] !== undefined) doc.errors[errorName].details = error?.details;
+      if (doc.errors[errorSig] !== undefined) doc.errors[errorSig].details = error?.details;
 
       for (const param in error?.params) {
-        if (doc.errors[errorName]?.inputs[param]) {
-          doc.errors[errorName].inputs[param].description = error?.params[param];
+        if (doc.errors[errorSig]?.inputs[param]) {
+          doc.errors[errorSig].inputs[param].description = error?.params[param];
         }
       }
 
@@ -162,8 +158,8 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
         if (value.startsWith('custom:')) {
           const strippedValue = value.replace('custom:', '');
           if (strippedValue.length > 0) {
-            if (doc.errors[errorName]) {
-              doc.errors[errorName][`custom:${strippedValue}`] = error[`custom:${strippedValue}`];
+            if (doc.errors[errorSig]) {
+              doc.errors[errorSig][`custom:${strippedValue}`] = error[`custom:${strippedValue}`];
             }
           }
         }
@@ -171,14 +167,13 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
     }
 
     for (const eventSig in info.devdoc?.events) {
-      const [eventName] = eventSig.split('(');
       const event = info.devdoc?.events[eventSig];
 
-      if (doc.events[eventName] !== undefined) doc.events[eventName].details = event?.details;
+      if (doc.events[eventSig] !== undefined) doc.events[eventSig].details = event?.details;
 
       for (const param in event?.params) {
-        if (doc.events[eventName]?.inputs[param]) {
-          doc.events[eventName].inputs[param].description = event?.params[param];
+        if (doc.events[eventSig]?.inputs[param]) {
+          doc.events[eventSig].inputs[param].description = event?.params[param];
         }
       }
 
@@ -186,8 +181,8 @@ async function generateDocumentation(hre: HardhatRuntimeEnvironment): Promise<vo
         if (value.startsWith('custom:')) {
           const strippedValue = value.replace('custom:', '');
           if (strippedValue.length > 0) {
-            if (doc.events[eventName]) {
-              doc.events[eventName][`custom:${strippedValue}`] = event[`custom:${strippedValue}`];
+            if (doc.events[eventSig]) {
+              doc.events[eventSig][`custom:${strippedValue}`] = event[`custom:${strippedValue}`];
             }
           }
         }

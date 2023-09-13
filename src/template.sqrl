@@ -114,7 +114,7 @@
 ## Events
 
 {{@foreach(it.events) => key, val}}
-### {{key}}
+### {{key.split('(')[0]}}
 
 
 ```solidity
@@ -151,7 +151,7 @@
 ## Errors
 
 {{@foreach(it.errors) => key, val}}
-### {{key}}
+### {{key.split('(')[0]}}
 
 
 ```solidity

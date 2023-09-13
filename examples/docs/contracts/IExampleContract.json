@@ -65,7 +65,7 @@
     }
   },
   "events": {
-    "DoSomething": {
+    "DoSomething(address,uint256)": {
       "code": "event DoSomething(address indexed a, uint256 b)",
       "inputs": {
         "a": {
@@ -82,7 +82,7 @@
       "notice": "Emitted when the function doSomething is called.",
       "details": "More info about the event can be added here."
     },
-    "NewEvent": {
+    "NewEvent(uint256)": {
       "code": "event NewEvent(uint256 newNumber)",
       "inputs": {
         "newNumber": {
@@ -96,7 +96,7 @@
     }
   },
   "errors": {
-    "RandomError": {
+    "RandomError(address,address)": {
       "code": "error RandomError(address expected, address actual)",
       "inputs": {
         "expected": {
